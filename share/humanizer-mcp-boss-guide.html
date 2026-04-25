@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add Humanizer to Claude Desktop</title>
+<style>
+  @page {
+    size: Letter;
+    margin: 0.7in 0.75in;
+    @bottom-center {
+      content: counter(page) " of " counter(pages);
+      font: 9pt/1.4 -apple-system, "Segoe UI", sans-serif;
+      color: #888;
+    }
+    @bottom-right {
+      content: "humanizer-mcp · github.com/aousabdo/humanizer-mcp";
+      font: 8pt/1.4 -apple-system, "Segoe UI", sans-serif;
+      color: #aaa;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font: 11pt/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    margin: 0;
+  }
+  .header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-size: 22pt;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+  }
+  .tagline {
+    font-size: 11pt;
+    color: #555;
+    margin: 0;
+  }
+  .summary-box {
+    background: #faf9f4;
+    border-left: 3px solid #c89a3c;
+    padding: 12px 16px;
+    margin: 0 0 28px;
+    font-size: 10.5pt;
+    border-radius: 2px;
+  }
+  .summary-box strong { color: #1a1a1a; }
+  h2 {
+    font-size: 14pt;
+    font-weight: 600;
+    margin: 28px 0 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e8e6e1;
+  }
+  h2:first-of-type { border-top: 0; padding-top: 0; }
+  h2 .step {
+    display: inline-block;
+    width: 26px; height: 26px; line-height: 26px;
+    text-align: center;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11pt; font-weight: 600;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  h2 .step-text { vertical-align: middle; }
+  p { margin: 6px 0 12px; }
+  ol, ul { margin: 8px 0 14px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  code, pre {
+    font: 10pt/1.5 "SF Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+  }
+  code {
+    background: #f0ede6;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 9.5pt;
+  }
+  pre {
+    background: #1a1a1a;
+    color: #f0ede6;
+    padding: 12px 14px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 8px 0 12px;
+    page-break-inside: avoid;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  pre code { background: transparent; padding: 0; color: inherit; font-size: 9.5pt; }
+  .path {
+    background: #f0ede6;
+    padding: 6px 10px;
+    border-radius: 3px;
+    font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
+    font-size: 9.5pt;
+    word-break: break-all;
+    margin: 6px 0;
+    border-left: 2px solid #c89a3c;
+  }
+  .checklist {
+    background: #f4f1ea;
+    border-radius: 4px;
+    padding: 12px 16px 12px 36px;
+    margin: 12px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  .checklist li {
+    list-style-type: "✓  ";
+    color: #2d8659;
+  }
+  .checklist li::marker { font-weight: bold; }
+  .checklist li code { color: #1a1a1a; }
+  .troubleshooting {
+    margin-top: 24px;
+    page-break-inside: avoid;
+  }
+  .troubleshooting h2 { font-size: 13pt; }
+  .trouble-item {
+    margin-bottom: 14px;
+    padding-left: 12px;
+    border-left: 2px solid #d6483b;
+  }
+  .trouble-item .symptom {
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .trouble-item .fix {
+    font-size: 10pt;
+    color: #444;
+    margin: 0;
+  }
+  .footer {
+    margin-top: 36px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e6e1;
+    font-size: 9.5pt;
+    color: #666;
+  }
+  .small { font-size: 9.5pt; color: #555; }
+  .note {
+    background: #f4f1ea;
+    border-radius: 3px;
+    padding: 8px 12px;
+    margin: 8px 0;
+    font-size: 10pt;
+  }
+  .note::before { content: "Note: "; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Add Humanizer to Claude Desktop</h1>
+  <p class="tagline">Score your text for AI-detection risk and get line-by-line fix suggestions, right inside Claude.</p>
+</div>
+
+<div class="summary-box">
+  <strong>What this is:</strong> A small tool that plugs into Claude Desktop. Once installed, you can paste any text into Claude and ask things like <em>"score this for AI tells"</em> — Claude will give you a 0–100 risk score and tell you exactly what to change.
+  <br><br>
+  <strong>Time:</strong> About 5 minutes. You'll do three things: install one helper tool, edit one config file, and restart Claude.
+  <br><br>
+  <strong>Requirements:</strong> Windows 10 or 11, Claude Desktop installed (free download from claude.ai/download). No coding required.
+</div>
+
+<h2><span class="step">1</span><span class="step-text">Install the launcher tool (<code>uv</code>)</span></h2>
+<p>Claude needs a small helper tool to run the humanizer. Open <strong>PowerShell</strong>:</p>
+<ol>
+  <li>Press the Windows key, type <code>PowerShell</code>, then press Enter.</li>
+  <li>Paste this whole line into PowerShell (right-click to paste) and press Enter:</li>
+</ol>
+<pre><code>powershell -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
+<p>Wait about 10 seconds. It prints a few lines and finishes. <strong>Then close PowerShell completely</strong> and reopen it — that step is necessary so the next test works.</p>
+
+<p>Verify the install by running:</p>
+<pre><code>uvx --version</code></pre>
+<p>You should see something like <code>uv 0.5.x</code>. If you see <em>"command not recognized"</em>, restart Windows and try again.</p>
+
+<h2><span class="step">2</span><span class="step-text">Tell Claude Desktop about humanizer</span></h2>
+<p>You'll edit one configuration file.</p>
+
+<ol>
+  <li>Quit Claude Desktop completely (right-click the icon in the system tray → Quit).</li>
+  <li>Press <strong>Windows + R</strong> to open the Run dialog.</li>
+  <li>Paste this path and press Enter:
+    <div class="path">%APPDATA%\Claude\</div>
+  </li>
+  <li>You should see a file called <code>claude_desktop_config.json</code>. Right-click it → <strong>Open with</strong> → <strong>Notepad</strong>.
+    <div class="note">If the file doesn't exist, open Notepad, then save a new file in the folder shown above. <strong>Important:</strong> in the Save dialog, set <em>"Save as type"</em> to <em>"All Files"</em>, and use the exact name <code>claude_desktop_config.json</code>. Otherwise Notepad will save it as <code>claude_desktop_config.json.txt</code> and Claude won't find it.</div>
+  </li>
+  <li>Replace the entire contents with this. (If the file already had other entries under <code>mcpServers</code>, just add the <code>humanizer</code> block alongside them — don't delete what was there.)</li>
+</ol>
+
+<pre><code>{
+  "mcpServers": {
+    "humanizer": {
+      "command": "uvx",
+      "args": ["humanizer-mcp"]
+    }
+  }
+}</code></pre>
+
+<p>Save the file (<strong>Ctrl + S</strong>) and close Notepad.</p>
+
+<h2><span class="step">3</span><span class="step-text">Reopen Claude Desktop</span></h2>
+<p>Launch Claude Desktop. Start a new chat. Look for the <strong>🔨 hammer icon</strong> near the message box at the bottom — click it and you should see five tools listed:</p>
+
+<div class="checklist">
+  <ul>
+    <li><code>humanizer_analyze_ai_tells</code></li>
+    <li><code>humanizer_quick_vocab_scan</code></li>
+    <li><code>humanizer_get_rewrite_instructions</code></li>
+    <li><code>humanizer_compare_before_after</code></li>
+    <li><code>humanizer_get_banned_words</code></li>
+  </ul>
+</div>
+
+<p>If they're there, you're done. The first time you actually use one, Claude pauses for ~30 seconds while the tool finishes downloading in the background — after that, it's instant.</p>
+
+<h2><span class="step">4</span><span class="step-text">Try it out</span></h2>
+<p>In any Claude chat, paste a paragraph and ask:</p>
+<div class="note" style="font-style: italic; background: #fff8e6; border-left: 3px solid #c89a3c;">"Score this for AI tells and tell me what to change."</div>
+<p>Claude returns a 0–100 risk score, the specific signals that fired (vocabulary hits, sentence rhythm, paragraph uniformity, em dashes, etc.), and a line-by-line list of what to replace. The eight-signal scoring approach is documented in the project README.</p>
+
+<p>Other prompts that work:</p>
+<ul>
+  <li><em>"Run a quick vocab scan on this paragraph."</em></li>
+  <li><em>"Give me rewrite instructions for this academic abstract — keep it formal but fix the burstiness."</em></li>
+  <li><em>"Compare these two drafts. Did my edit lower the AI-detection risk?"</em></li>
+</ul>
+
+<div class="troubleshooting">
+<h2>If something goes wrong</h2>
+
+<div class="trouble-item">
+  <p class="symptom">No hammer icon shows up in Claude Desktop</p>
+  <p class="fix">The JSON file probably has a small syntax error (missing comma, extra brace). Open PowerShell and run: <code>Get-Content "$env:APPDATA\Claude\claude_desktop_config.json" | ConvertFrom-Json</code>. If it errors, the message points at the problem line. Fix it, save, restart Claude.</p>
+</div>
+
+<div class="trouble-item">
+  <p class="symptom">Hammer icon shows but says "0 tools available"</p>
+  <p class="fix">Claude can't find <code>uvx</code>. In PowerShell run <code>where.exe uvx</code>. If it prints nothing, the install in Step 1 didn't take — repeat Step 1, restart Windows, try again.</p>
+</div>
+
+<div class="trouble-item">
+  <p class="symptom">Tools list correctly but error when used</p>
+  <p class="fix">Open <code>%APPDATA%\Claude\logs\</code> and find the file beginning with <code>mcp-server-humanizer</code>. Send the last 20 lines to whoever set this up — they'll diagnose from there.</p>
+</div>
+
+<div class="trouble-item">
+  <p class="symptom">Notepad saved the file with a <code>.txt</code> extension</p>
+  <p class="fix">In File Explorer, enable <em>"File name extensions"</em> in the View menu, then rename the file from <code>claude_desktop_config.json.txt</code> to <code>claude_desktop_config.json</code>.</p>
+</div>
+</div>
+
+<div class="footer">
+  <strong>About this tool.</strong> humanizer-mcp is open source under the MIT license. The full source code, scoring rubric, and bug tracker are at <strong>github.com/aousabdo/humanizer-mcp</strong>. The package is published on PyPI and npm; <code>uvx</code> always pulls the latest version, so updates are automatic — no maintenance on your end.
+</div>
+
+</body>
+</html>

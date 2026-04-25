@@ -28,6 +28,8 @@ Rather than running your prose through a black-box "humanizer," this server anal
 | **Skill (no install, no infra, estimated)** | Same surfaces, plus people who don't want to use up their 1 free-tier connector slot | Upload the [`skill/humanizer-mcp/`](skill/humanizer-mcp/) folder under *Settings → Capabilities → Skills*. See [skill/README.md](skill/README.md). |
 | **Local install (`uvx` / `npx`)** | Claude Code on the terminal, Desktop with stdio | One command in a shell. |
 
+> **Sharing with non-technical users?** [share/humanizer-mcp-boss-guide.pdf](share/humanizer-mcp-boss-guide.pdf) is a 3-page Windows-first walkthrough for executives / managers / anyone who can install an app and edit a config file but doesn't live in a terminal. Email-attachment friendly. macOS variant lives in the project history if needed.
+
 ### Path A — add as a Custom Connector (zero install)
 
 Works in **claude.ai (web), Claude Desktop, and Claude for Chrome** — all four surfaces share the connector list once you're signed in. Available on every plan including Free (Free is limited to one custom connector).
