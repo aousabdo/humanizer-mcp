@@ -102,6 +102,16 @@ docker build -t humanizer-mcp .
 docker run -p 8000:8000 humanizer-mcp
 ```
 
+**Cloudflare Tunnel from your laptop** — zero hosting cost, only up while your machine is on:
+
+```bash
+brew install cloudflared
+pipx install humanizer-mcp        # or: pip install humanizer-mcp
+humanizer-mcp --http --port 8000 &
+cloudflared tunnel --url http://localhost:8000
+# copy the trycloudflare.com URL it prints
+```
+
 The MCP endpoint is at `/mcp` (streamable HTTP). The server is stateless and unauthenticated — anyone with the URL can call the tools, but there are no secrets and no destructive operations to abuse.
 
 ### Run the HTTP server locally
@@ -110,6 +120,32 @@ The MCP endpoint is at `/mcp` (streamable HTTP). The server is stateless and una
 humanizer-mcp --http --port 8000
 # point a client at http://127.0.0.1:8000/mcp
 ```
+
+## Verify it works
+
+Once installed by any path, in any Claude chat ask:
+
+> *"What humanizer tools do you have available?"*
+
+Claude should list five: `humanizer_analyze_ai_tells`, `humanizer_quick_vocab_scan`, `humanizer_get_rewrite_instructions`, `humanizer_compare_before_after`, `humanizer_get_banned_words`.
+
+Then try the canonical test:
+
+> *"Score this for AI tells: 'In today's rapidly evolving digital landscape, it's important to note that businesses must leverage cutting-edge solutions to navigate the multifaceted challenges they face.'"*
+
+You should get a score in the HIGH bucket (≥ 60), the signals that fired, and a line-by-line fix list.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `claude mcp list` shows server but no tools | `uvx` isn't on `$PATH` for the Claude Code subprocess | `which uvx`; add `~/.local/bin` to `$PATH` in your shell rc |
+| `humanizer-mcp: command not found` after `pip install` | pip user-install bin not on `$PATH` | Use `python3 -m humanizer_mcp` instead — always works |
+| Claude Desktop has no hammer icon | Config JSON syntax error | `python3 -m json.tool < claude_desktop_config.json` to validate |
+| `npx humanizer-mcp` hangs ~30s on first run | Launcher is shelling to `uvx`, which downloads deps on first use | Wait it out; subsequent runs are instant |
+| Render-hosted: 406 spam in logs | Health Check Path is `/mcp`; should be `/health` | Settings → Health & Alerts → set to `/health` |
+| Render-hosted: `pip install` killed during build | OOM on free tier (512MB) — `pydantic-core` native compile spikes | Switch to Fly free tier or upgrade Render to Starter |
+| Custom Connector add fails on claude.ai Free | Already at the 1-connector limit | Remove an unused connector; or upgrade plan |
 
 ## Example prompts
 
