@@ -20,40 +20,35 @@ Rather than running your prose through a black-box "humanizer," this server anal
 | `humanizer_compare_before_after` | Side-by-side metrics for an original and a rewrite, with a PASS / IMPROVED / NEEDS MORE WORK verdict. |
 | `humanizer_get_banned_words` | The full vocabulary and phrase ban list, for reference. |
 
-## Installation
+## Two ways to use it
 
-### With `uvx` (recommended — no install step)
+| Path | Best for | What you do |
+|---|---|---|
+| **Hosted URL (no install)** | claude.ai, Claude Desktop, Claude for Chrome — including Free plan | Paste one URL into *Settings → Connectors → Add custom connector*. |
+| **Local install (`uvx` / `npx`)** | Claude Code on the terminal, Desktop with stdio | One command in a shell. |
 
-```bash
-uvx humanizer-mcp
-```
+### Path A — add as a Custom Connector (zero install)
 
-### With `pip`
+Works in **claude.ai (web), Claude Desktop, and Claude for Chrome** — all four surfaces share the connector list once you're signed in. Available on every plan including Free (Free is limited to one custom connector).
 
-```bash
-pip install humanizer-mcp
-humanizer-mcp
-```
+1. Open Claude → **Settings** → **Connectors**.
+2. Click **Add custom connector**.
+3. Paste the server URL (replace with your hosted instance — see [Hosting](#hosting) below):
+   ```
+   https://humanizer-mcp.onrender.com/mcp
+   ```
+4. Save. The five `humanizer_*` tools become available in any chat.
 
-### With `npx`
+That's the whole install for non-technical users — they never touch a terminal.
 
-```bash
-npx humanizer-mcp
-```
-
-The npm package is a thin launcher that delegates to `uvx`, `pipx run`, or `python3 -m humanizer_mcp` — whichever is available on the host.
-
-## Configure your MCP client
-
-### Claude Code
+### Path B — install locally (Claude Code / Desktop with stdio)
 
 ```bash
+# Claude Code, one line
 claude mcp add humanizer -- uvx humanizer-mcp
 ```
 
-### Claude Desktop
-
-Add to `claude_desktop_config.json`:
+For Claude Desktop with a local stdio server, add this to `claude_desktop_config.json`:
 
 ```json
 {
@@ -71,29 +66,48 @@ Config location:
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 - Linux: `~/.config/Claude/claude_desktop_config.json`
 
-### Generic MCP client (stdio)
-
-```json
-{
-  "command": "uvx",
-  "args": ["humanizer-mcp"]
-}
-```
-
-### HTTP transport
-
-For remote access, run the server on a port and point your client at it:
+Other ways to launch the local binary if you don't want `uvx`:
 
 ```bash
-humanizer-mcp --http --port 8000
+pip install humanizer-mcp && humanizer-mcp     # pip
+npx humanizer-mcp                              # npm launcher (delegates to uvx/pipx/python3)
 ```
 
-## Try it with the MCP Inspector
-
-Poke at the tools without configuring a client:
+### Try it with the MCP Inspector
 
 ```bash
 npx @modelcontextprotocol/inspector uvx humanizer-mcp
+```
+
+## Hosting
+
+To create the URL in Path A, deploy the included `Dockerfile`. The repo ships with a Render Blueprint and a Fly config:
+
+**Render** — easiest, free tier, auto-deploys from the GitHub repo:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/aousabdo/humanizer-mcp)
+
+**Fly.io** — always-on free tier:
+
+```bash
+fly launch --copy-config --name humanizer-mcp
+fly deploy
+```
+
+**Anywhere else** — the Dockerfile reads `PORT` from the environment and binds to `0.0.0.0`, so it runs on Railway, Heroku, Cloud Run, ECS, or your own box:
+
+```bash
+docker build -t humanizer-mcp .
+docker run -p 8000:8000 humanizer-mcp
+```
+
+The MCP endpoint is at `/mcp` (streamable HTTP). The server is stateless and unauthenticated — anyone with the URL can call the tools, but there are no secrets and no destructive operations to abuse.
+
+### Run the HTTP server locally
+
+```bash
+humanizer-mcp --http --port 8000
+# point a client at http://127.0.0.1:8000/mcp
 ```
 
 ## Example prompts

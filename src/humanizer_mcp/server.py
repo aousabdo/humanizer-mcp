@@ -21,7 +21,10 @@ import re
 from enum import Enum
 from typing import Any
 
+import os
+
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel, ConfigDict, Field
 
 # ─────────────────────────────────────────────────────────────────────
@@ -972,15 +975,25 @@ def main() -> None:
         help="Run as streamable-HTTP server instead of stdio (default).",
     )
     parser.add_argument(
+        "--host",
+        default=os.environ.get("HOST", "0.0.0.0"),
+        help="Bind address for HTTP transport (default: 0.0.0.0, or $HOST).",
+    )
+    parser.add_argument(
         "--port",
         type=int,
-        default=8000,
-        help="Port for HTTP transport (default: 8000).",
+        default=int(os.environ.get("PORT", "8000")),
+        help="Port for HTTP transport (default: 8000, or $PORT).",
     )
     args = parser.parse_args()
 
     if args.http:
-        mcp.run(transport="streamable_http", port=args.port)
+        mcp.settings.host = args.host
+        mcp.settings.port = args.port
+        mcp.settings.transport_security = TransportSecuritySettings(
+            enable_dns_rebinding_protection=False,
+        )
+        mcp.run(transport="streamable-http")
     else:
         mcp.run()
 

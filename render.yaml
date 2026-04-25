@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: humanizer-mcp
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /mcp
+    envVars:
+      - key: PORT
+        value: "8000"
