@@ -20,11 +20,12 @@ Rather than running your prose through a black-box "humanizer," this server anal
 | `humanizer_compare_before_after` | Side-by-side metrics for an original and a rewrite, with a PASS / IMPROVED / NEEDS MORE WORK verdict. |
 | `humanizer_get_banned_words` | The full vocabulary and phrase ban list, for reference. |
 
-## Two ways to use it
+## Three ways to use it
 
 | Path | Best for | What you do |
 |---|---|---|
-| **Hosted URL (no install)** | claude.ai, Claude Desktop, Claude for Chrome — including Free plan | Paste one URL into *Settings → Connectors → Add custom connector*. |
+| **Hosted URL (no install, deterministic)** | claude.ai, Claude Desktop, Claude for Chrome — including Free plan | Paste one URL into *Settings → Connectors → Add custom connector*. |
+| **Skill (no install, no infra, estimated)** | Same surfaces, plus people who don't want to use up their 1 free-tier connector slot | Upload the [`skill/humanizer-mcp/`](skill/humanizer-mcp/) folder under *Settings → Capabilities → Skills*. See [skill/README.md](skill/README.md). |
 | **Local install (`uvx` / `npx`)** | Claude Code on the terminal, Desktop with stdio | One command in a shell. |
 
 ### Path A — add as a Custom Connector (zero install)
