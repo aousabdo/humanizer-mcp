@@ -109,6 +109,163 @@ AI_PHRASES: list[str] = [
 
 mcp = FastMCP(SERVER_NAME)
 
+
+# ─────────────────────────────────────────────────────────────────────
+# Landing Page (HTTP only) — visited at the root URL when hosted
+# ─────────────────────────────────────────────────────────────────────
+
+_LANDING_HTML = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Humanizer MCP — add to Claude</title>
+<meta name="description" content="A Claude tool that scores text for AI-detection risk and tells you what to fix. Add it to Claude in 30 seconds.">
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 680px; margin: 0 auto; padding: 32px 20px 80px;
+    color: #1a1a1a; background: #fafaf7;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { color: #e8e6e1; background: #1a1a1a; }
+    .url-box { background: #2a2a2a; border-color: #444; }
+    .step { border-color: #333; }
+    code { background: #2a2a2a; }
+  }
+  h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .tagline { color: #666; margin: 0 0 32px; }
+  @media (prefers-color-scheme: dark) { .tagline { color: #aaa; } }
+  h2 { font-size: 18px; margin: 32px 0 12px; }
+  .url-box {
+    display: flex; gap: 8px; align-items: stretch;
+    border: 1px solid #ddd; border-radius: 8px; padding: 4px;
+    background: #fff; margin: 8px 0 24px;
+  }
+  .url-box input {
+    flex: 1; border: 0; outline: 0; background: transparent;
+    font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    padding: 10px 12px; color: inherit; min-width: 0;
+  }
+  .url-box button {
+    border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer;
+    background: #1a1a1a; color: #fff; font: inherit; font-weight: 500;
+    transition: background 0.15s;
+  }
+  .url-box button:hover { background: #333; }
+  .url-box button.copied { background: #2d8659; }
+  @media (prefers-color-scheme: dark) {
+    .url-box button { background: #e8e6e1; color: #1a1a1a; }
+    .url-box button:hover { background: #fff; }
+  }
+  ol { padding-left: 20px; }
+  ol li { margin: 6px 0; }
+  .step { border-left: 3px solid #ddd; padding: 12px 16px; margin: 12px 0; border-radius: 4px; }
+  code {
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #f0ede6; padding: 2px 6px; border-radius: 4px;
+  }
+  pre {
+    font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #1a1a1a; color: #e8e6e1; padding: 12px; border-radius: 6px;
+    overflow-x: auto; margin: 8px 0;
+  }
+  details { margin: 24px 0; }
+  details summary { cursor: pointer; font-weight: 500; padding: 8px 0; }
+  .footer { margin-top: 48px; color: #888; font-size: 14px; }
+  .footer a { color: inherit; }
+  .small { font-size: 14px; color: #888; }
+</style>
+</head>
+<body>
+  <h1>Humanizer MCP</h1>
+  <p class="tagline">Scores your text for AI-detection risk and tells you what to fix — line by line. Adds five tools to Claude in about 30 seconds.</p>
+
+  <h2>1. Copy this URL</h2>
+  <div class="url-box">
+    <input id="url" readonly value="__BASE_URL__/mcp">
+    <button id="copy-btn" onclick="copyUrl()">Copy</button>
+  </div>
+
+  <h2>2. Add it to Claude</h2>
+  <p>Works in <strong>claude.ai (web)</strong>, <strong>Claude Desktop</strong>, and <strong>Claude for Chrome</strong>. You only set it up once — adding it on any one of those automatically makes it available in all three.</p>
+  <div class="step">
+    <ol>
+      <li>Open Claude (any of the surfaces above).</li>
+      <li>Go to <strong>Settings</strong> → <strong>Connectors</strong>.</li>
+      <li>Click <strong>Add custom connector</strong>.</li>
+      <li>Paste the URL into the <em>Remote MCP server URL</em> field.</li>
+      <li>Click <strong>Add</strong> or <strong>Save</strong>.</li>
+    </ol>
+    <p class="small">Free Claude plans are limited to one custom connector. Pro/Max/Team/Enterprise have no limit.</p>
+  </div>
+
+  <h2>3. Use it</h2>
+  <p>In any Claude chat, paste your text and try one of these:</p>
+  <ul>
+    <li><em>"Analyze this for AI tells and tell me what to change."</em></li>
+    <li><em>"Run a quick vocab scan on this paragraph."</em></li>
+    <li><em>"Compare these two drafts. Did my edit lower the AI-detection risk?"</em></li>
+  </ul>
+  <p>Claude picks the right tool automatically.</p>
+
+  <details>
+    <summary>For developers — install locally instead</summary>
+    <p>If you'd rather run the server on your own machine (faster, fully private, works offline once installed):</p>
+    <p><strong>Claude Code:</strong></p>
+    <pre><code>claude mcp add humanizer -- uvx humanizer-mcp</code></pre>
+    <p><strong>Claude Desktop</strong> — add to <code>claude_desktop_config.json</code>:</p>
+    <pre><code>{
+  "mcpServers": {
+    "humanizer": {
+      "command": "uvx",
+      "args": ["humanizer-mcp"]
+    }
+  }
+}</code></pre>
+  </details>
+
+  <p class="footer">
+    Source &amp; docs: <a href="https://github.com/aousabdo/humanizer-mcp">github.com/aousabdo/humanizer-mcp</a>
+    · MIT licensed
+    · <a href="https://pypi.org/project/humanizer-mcp/">PyPI</a>
+    · <a href="https://www.npmjs.com/package/humanizer-mcp">npm</a>
+  </p>
+
+<script>
+  function copyUrl() {
+    const input = document.getElementById('url');
+    const btn = document.getElementById('copy-btn');
+    input.select();
+    navigator.clipboard.writeText(input.value).then(() => {
+      btn.textContent = 'Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1600);
+    });
+  }
+</script>
+</body>
+</html>"""
+
+
+@mcp.custom_route("/", methods=["GET"])
+async def landing_page(request):  # type: ignore[no-untyped-def]
+    """Friendly landing page so non-technical users get instructions, not a 404."""
+    from starlette.responses import HTMLResponse
+
+    base_url = str(request.base_url).rstrip("/")
+    return HTMLResponse(_LANDING_HTML.replace("__BASE_URL__", base_url))
+
+
+@mcp.custom_route("/health", methods=["GET"])
+async def health_check(request):  # type: ignore[no-untyped-def]
+    """Simple liveness probe for hosted deployments."""
+    from starlette.responses import JSONResponse
+
+    return JSONResponse({"status": "ok", "service": SERVER_NAME})
+
 # ─────────────────────────────────────────────────────────────────────
 # Shared Utilities
 # ─────────────────────────────────────────────────────────────────────

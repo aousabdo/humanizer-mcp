@@ -4,7 +4,7 @@ services:
     runtime: docker
     plan: free
     region: oregon
-    healthCheckPath: /mcp
+    healthCheckPath: /health
     envVars:
       - key: PORT
         value: "8000"
