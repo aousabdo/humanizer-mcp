@@ -28,7 +28,10 @@ Rather than running your prose through a black-box "humanizer," this server anal
 | **Skill (no install, no infra, estimated)** | Same surfaces, plus people who don't want to use up their 1 free-tier connector slot | Upload the [`skill/humanizer-mcp/`](skill/humanizer-mcp/) folder under *Settings → Capabilities → Skills*. See [skill/README.md](skill/README.md). |
 | **Local install (`uvx` / `npx`)** | Claude Code on the terminal, Desktop with stdio | One command in a shell. |
 
-> **Sharing with non-technical users?** [share/humanizer-mcp-boss-guide.pdf](share/humanizer-mcp-boss-guide.pdf) is a 3-page Windows-first walkthrough for executives / managers / anyone who can install an app and edit a config file but doesn't live in a terminal. Email-attachment friendly. macOS variant lives in the project history if needed.
+> **Sharing with non-technical users?** Two PDFs in [`share/`](share/) — email either one, no further explanation needed:
+>
+> - [share/humanizer-mcp-friends-guide.pdf](share/humanizer-mcp-friends-guide.pdf) — 2 pages. Truly non-technical: download a zip, upload it to Claude, done. No install.
+> - [share/humanizer-mcp-boss-guide.pdf](share/humanizer-mcp-boss-guide.pdf) — 3 pages. Semi-technical Windows users who can install an app and edit a config file. Sets up the full MCP server with Claude Desktop.
 
 ### Path A — add as a Custom Connector (zero install)
 

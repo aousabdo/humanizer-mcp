@@ -6,13 +6,16 @@ Polished, ready-to-send guides for non-technical and semi-technical users. Email
 
 | File | For | What it is |
 |---|---|---|
+| [`humanizer-mcp-friends-guide.pdf`](humanizer-mcp-friends-guide.pdf) | Truly non-technical friends (no terminal, no config files) | 2-page walkthrough — download a zip, upload it to Claude, done. No install. |
+| [`humanizer-mcp-friends-guide.html`](humanizer-mcp-friends-guide.html) | Source for the friends PDF | Edit and re-render via `weasyprint humanizer-mcp-friends-guide.html humanizer-mcp-friends-guide.pdf`. |
 | [`humanizer-mcp-boss-guide.pdf`](humanizer-mcp-boss-guide.pdf) | Semi-technical Windows users (executives, managers, anyone who can install apps and edit a config file) | 3-page Windows-first walkthrough — installs the `uv` launcher, edits `claude_desktop_config.json`, restarts Claude Desktop. Includes troubleshooting. |
-| [`humanizer-mcp-boss-guide.html`](humanizer-mcp-boss-guide.html) | Source for the PDF above | Self-contained HTML with print styles. Edit and re-render via `weasyprint humanizer-mcp-boss-guide.html humanizer-mcp-boss-guide.pdf`. |
+| [`humanizer-mcp-boss-guide.html`](humanizer-mcp-boss-guide.html) | Source for the boss PDF | Edit and re-render via `weasyprint humanizer-mcp-boss-guide.html humanizer-mcp-boss-guide.pdf`. |
 
 ## Direct download links
 
-- **PDF**: https://github.com/aousabdo/humanizer-mcp/raw/main/share/humanizer-mcp-boss-guide.pdf
-- **HTML preview**: https://htmlpreview.github.io/?https://github.com/aousabdo/humanizer-mcp/blob/main/share/humanizer-mcp-boss-guide.html
+- **Friends PDF**: https://github.com/aousabdo/humanizer-mcp/raw/main/share/humanizer-mcp-friends-guide.pdf
+- **Boss PDF**: https://github.com/aousabdo/humanizer-mcp/raw/main/share/humanizer-mcp-boss-guide.pdf
+- **Skill zip** (referenced by friends PDF): https://github.com/aousabdo/humanizer-mcp/raw/main/skill/humanizer-mcp.zip
 
 ## Distribution paths matrix
 
