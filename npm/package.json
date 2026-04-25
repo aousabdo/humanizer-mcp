@@ -1,0 +1,40 @@
+{
+  "name": "humanizer-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for analyzing and humanizing AI-generated text. Thin npm launcher for the Python package.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-detection",
+    "humanizer",
+    "claude",
+    "anthropic",
+    "llm"
+  ],
+  "homepage": "https://github.com/aousabdo/humanizer-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/aousabdo/humanizer-mcp/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aousabdo/humanizer-mcp.git",
+    "directory": "npm"
+  },
+  "license": "MIT",
+  "author": "Aous Abdo <aousabdo@gmail.com>",
+  "bin": {
+    "humanizer-mcp": "bin/humanizer-mcp.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}

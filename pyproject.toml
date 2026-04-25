@@ -1,0 +1,100 @@
+[build-system]
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "humanizer-mcp"
+dynamic = ["version"]
+description = "MCP server for analyzing and humanizing AI-generated text to bypass AI detection."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Aous Abdo", email = "aousabdo@gmail.com" },
+]
+keywords = [
+    "mcp",
+    "model-context-protocol",
+    "ai-detection",
+    "humanizer",
+    "claude",
+    "anthropic",
+    "llm",
+    "text-analysis",
+    "fastmcp",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "mcp>=1.2.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.5.0",
+]
+
+[project.scripts]
+humanizer-mcp = "humanizer_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/aousabdo/humanizer-mcp"
+Repository = "https://github.com/aousabdo/humanizer-mcp"
+Issues = "https://github.com/aousabdo/humanizer-mcp/issues"
+Changelog = "https://github.com/aousabdo/humanizer-mcp/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/humanizer_mcp/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/humanizer_mcp"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/pyproject.toml",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+]
+ignore = [
+    "E501",  # line too long (handled by formatter where reasonable)
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-ra"
