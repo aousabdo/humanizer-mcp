@@ -265,6 +265,7 @@ async def health_check(request):  # type: ignore[no-untyped-def]
 
     return JSONResponse({"status": "ok", "service": SERVER_NAME})
 
+
 # ─────────────────────────────────────────────────────────────────────
 # Shared Utilities
 # ─────────────────────────────────────────────────────────────────────
