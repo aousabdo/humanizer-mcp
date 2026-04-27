@@ -4,268 +4,461 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Humanizer MCP — score your text for AI-detection risk</title>
-<meta name="description" content="A Claude tool that scores text for AI-detection risk and tells you, line by line, what to change. Three install paths.">
+<meta name="description" content="A Claude tool that scores text for AI-detection risk and tells you, line by line, what to change. Three install paths. Free and open source.">
 
 <meta property="og:title" content="Humanizer MCP — score your text for AI-detection risk">
 <meta property="og:description" content="A Claude tool that scores text for AI-detection risk and tells you, line by line, what to change. Three install paths — pick whichever is easiest for you.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://aousabdo.github.io/humanizer-mcp/">
+<meta property="og:url" content="https://humanizer.analyticadss.com/">
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📝%3C/text%3E%3C/svg%3E">
 
 <style>
-  :root { color-scheme: light dark; }
+  :root {
+    color-scheme: light dark;
+    --bg: #fafaf7;
+    --bg-card: #ffffff;
+    --bg-code: #1a1a1a;
+    --bg-code-inline: #f0ede6;
+    --bg-soft: #f4f1ea;
+    --fg: #1a1a1a;
+    --fg-muted: #5a5648;
+    --fg-faint: #888;
+    --border: #e0ddd5;
+    --accent: #c89a3c;
+    --accent-soft: #fff8e6;
+    --green: #2d8659;
+    --green-soft: #e6f4ec;
+    --red: #b85a4d;
+    --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.06);
+    --shadow-hover: 0 1px 3px rgba(0,0,0,0.06), 0 8px 28px rgba(0,0,0,0.10);
+    --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15140f;
+      --bg-card: #1f1d18;
+      --bg-code: #0a0a08;
+      --bg-code-inline: #2a2820;
+      --bg-soft: #1a1814;
+      --fg: #e8e6e1;
+      --fg-muted: #aaa6a0;
+      --fg-faint: #777;
+      --border: #3d3a30;
+      --accent: #d6a847;
+      --accent-soft: #2a2418;
+      --green: #6dc085;
+      --green-soft: #1a2a20;
+      --red: #d97961;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 14px rgba(0,0,0,0.2);
+      --shadow-hover: 0 1px 3px rgba(0,0,0,0.4), 0 8px 28px rgba(0,0,0,0.35);
+    }
+  }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    max-width: 760px; margin: 0 auto; padding: 40px 20px 80px;
-    color: #1a1a1a; background: #fafaf7;
+    margin: 0;
+    color: var(--fg);
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 20% -10%, rgba(200,154,60,0.12), transparent 50%),
+      radial-gradient(ellipse at 80% -20%, rgba(45,134,89,0.08), transparent 50%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
-  @media (prefers-color-scheme: dark) {
-    body { color: #e8e6e1; background: #15140f; }
-    .url-box { background: #2a2820; border-color: #3d3a30; }
-    code { background: #2a2820; }
-    .card { background: #1f1d18; border-color: #3d3a30; }
-    .card.recommended { border-color: #c89a3c; }
-    pre { background: #0a0a08; }
-    table { border-color: #3d3a30; }
-    th { background: #2a2820; }
-    td, th { border-color: #3d3a30; }
-    .compare-yes { color: #6dc085; }
-    .compare-no { color: #d97961; }
-    .compare-meh { color: #c89a3c; }
+  .container { max-width: 780px; margin: 0 auto; padding: 0 20px; }
+
+  /* Hero */
+  .hero { padding: 64px 0 32px; text-align: left; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--fg-muted);
+    background: var(--accent-soft); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 999px;
+    margin-bottom: 18px;
   }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2.4s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
   h1 {
-    font-size: 32px; font-weight: 700; letter-spacing: -0.02em;
-    margin: 0 0 8px;
+    font-size: 44px; font-weight: 700; letter-spacing: -0.025em;
+    margin: 0 0 16px; line-height: 1.1;
+  }
+  h1 .gradient {
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   .tagline {
-    font-size: 17px; color: #555; margin: 0 0 4px;
+    font-size: 18px; color: var(--fg-muted); margin: 0 0 8px; line-height: 1.5;
+    max-width: 620px;
   }
-  @media (prefers-color-scheme: dark) { .tagline { color: #aaa; } }
-  .subtagline {
-    font-size: 14px; color: #888; margin: 0 0 36px;
+  .badges-hero {
+    display: flex; gap: 8px; margin: 24px 0 0; flex-wrap: wrap;
   }
-  h2 {
-    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
-    margin: 40px 0 12px;
+  .badges-hero a, .badges-hero span {
+    font-size: 13px; padding: 6px 12px; border-radius: 999px;
+    background: var(--bg-card); border: 1px solid var(--border);
+    color: var(--fg-muted); text-decoration: none;
+    transition: all 0.15s;
   }
-  h3 {
-    font-size: 17px; font-weight: 600;
-    margin: 0 0 6px;
-  }
-  p { margin: 8px 0 14px; }
-  ol, ul { padding-left: 22px; }
-  ol li, ul li { margin: 4px 0; }
-  a { color: #1a1a1a; text-decoration: underline; text-decoration-color: #c89a3c; text-underline-offset: 2px; }
-  a:hover { text-decoration-color: #1a1a1a; }
-  @media (prefers-color-scheme: dark) {
-    a { color: #e8e6e1; text-decoration-color: #c89a3c; }
-    a:hover { text-decoration-color: #e8e6e1; }
-  }
+  .badges-hero a:hover { border-color: var(--accent); color: var(--fg); transform: translateY(-1px); }
 
+  /* Section heads */
+  h2 {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.015em;
+    margin: 64px 0 16px; line-height: 1.3;
+  }
+  h2 .num {
+    display: inline-block;
+    width: 32px; height: 32px; line-height: 32px; text-align: center;
+    background: var(--fg); color: var(--bg);
+    border-radius: 50%;
+    font-size: 16px; font-weight: 700;
+    margin-right: 12px; vertical-align: 2px;
+  }
+  h3 { font-size: 18px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.01em; }
+  p { margin: 8px 0 14px; color: var(--fg); }
+  p.lead { color: var(--fg-muted); font-size: 16px; max-width: 620px; margin-bottom: 24px; }
+
+  /* Links */
+  a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; transition: text-decoration-color 0.15s; }
+  a:hover { text-decoration-color: var(--fg); }
+
+  /* URL copy box */
   .url-box {
     display: flex; gap: 8px; align-items: stretch;
-    border: 1px solid #ddd; border-radius: 8px; padding: 4px;
-    background: #fff; margin: 12px 0 16px;
+    border: 1px solid var(--border); border-radius: var(--radius); padding: 5px;
+    background: var(--bg-card);
+    margin: 16px 0 8px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
   }
+  .url-box:hover { box-shadow: var(--shadow-hover); }
   .url-box input {
     flex: 1; border: 0; outline: 0; background: transparent;
     font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-    padding: 12px 14px; color: inherit; min-width: 0;
+    padding: 14px 16px; color: inherit; min-width: 0;
   }
   .url-box button {
-    border: 0; border-radius: 6px; padding: 0 22px; cursor: pointer;
-    background: #1a1a1a; color: #fff; font: inherit; font-weight: 500; font-size: 14px;
-    transition: background 0.15s;
-    min-width: 90px;
+    border: 0; border-radius: 8px; padding: 0 24px; cursor: pointer;
+    background: var(--fg); color: var(--bg); font: inherit; font-weight: 600; font-size: 14px;
+    transition: all 0.15s;
+    min-width: 100px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
-  .url-box button:hover { background: #333; }
-  .url-box button.copied { background: #2d8659; }
-  @media (prefers-color-scheme: dark) {
-    .url-box button { background: #e8e6e1; color: #1a1a1a; }
-    .url-box button:hover { background: #fff; }
-  }
+  .url-box button:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .url-box button:active { transform: translateY(0); }
+  .url-box button.copied { background: var(--green); color: #fff; }
 
-  .cards { display: flex; flex-direction: column; gap: 16px; margin: 0 0 8px; }
+  /* Cards */
+  .cards { display: grid; gap: 18px; margin: 8px 0; }
   .card {
-    border: 1px solid #e0ddd5;
-    border-radius: 10px;
-    padding: 22px 24px;
-    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
     position: relative;
+    transition: all 0.2s;
   }
-  .card.recommended { border-color: #c89a3c; border-width: 2px; padding: 21px 23px; }
+  .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+  .card.recommended { border-color: var(--accent); border-width: 2px; padding: 25px 27px; }
   .card.recommended::before {
-    content: "Recommended for non-technical users";
+    content: "★ Recommended for non-technical users";
     position: absolute;
-    top: -12px; left: 18px;
-    font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
-    background: #c89a3c; color: #fff;
-    padding: 4px 10px; border-radius: 12px;
+    top: -13px; left: 22px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
+    background: var(--accent); color: #fff;
+    padding: 5px 12px; border-radius: 999px;
   }
-  .card .badges { display: flex; gap: 8px; margin: 0 0 8px; flex-wrap: wrap; }
+  .card-head {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 8px;
+  }
+  .card-icon {
+    flex: 0 0 44px; width: 44px; height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg-soft); border-radius: 10px;
+    color: var(--accent);
+  }
+  .card-icon svg { width: 22px; height: 22px; }
+  .card .who { color: var(--fg-faint); font-size: 14px; margin: 0 0 14px; }
+  .card .badges { display: flex; gap: 6px; margin: 0 0 4px; flex-wrap: wrap; }
   .badge {
     font-size: 11px; font-weight: 500;
-    padding: 3px 10px; border-radius: 12px;
-    background: #f0ede6; color: #5a5648;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--bg-soft); color: var(--fg-muted);
   }
-  @media (prefers-color-scheme: dark) {
-    .badge { background: #2a2820; color: #aaa6a0; }
-  }
-  .card .who { color: #888; font-size: 13.5px; margin: 0 0 12px; }
-  .card ol { margin: 8px 0; padding-left: 20px; font-size: 14.5px; }
+  .card ol { margin: 12px 0 0; padding-left: 22px; font-size: 14.5px; }
+  .card ol li { margin: 6px 0; line-height: 1.55; }
 
+  /* Download button */
   .download-link {
-    display: inline-block;
-    background: #2d8659; color: #fff !important;
-    padding: 10px 18px; border-radius: 6px;
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green); color: #fff !important;
+    padding: 10px 18px; border-radius: 8px;
     text-decoration: none !important;
-    font-weight: 500; font-size: 14px;
-    margin: 6px 0;
-    transition: background 0.15s;
+    font-weight: 600; font-size: 14px;
+    margin: 8px 0;
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
   }
-  .download-link:hover { background: #226b47; }
-  .download-link::before { content: "↓ "; }
+  .download-link:hover { background: #226b47; transform: translateY(-1px); box-shadow: var(--shadow-hover); }
+  .download-link svg { width: 16px; height: 16px; }
 
-  table {
-    width: 100%; border-collapse: collapse;
-    margin: 12px 0 24px;
-    border: 1px solid #e0ddd5; border-radius: 6px;
+  /* Example output card */
+  .example-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
     overflow: hidden;
-    font-size: 14px;
+    margin: 16px 0;
   }
-  th, td {
-    padding: 10px 14px; text-align: left;
-    border-bottom: 1px solid #e0ddd5;
+  .example-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 18px;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--fg-muted);
   }
-  th {
-    background: #f0ede6;
-    font-size: 13px; font-weight: 600;
+  .example-dots { display: flex; gap: 6px; }
+  .example-dots span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+  .example-dots span:first-child { background: #ed6a5e; }
+  .example-dots span:nth-child(2) { background: #f5bf4f; }
+  .example-dots span:nth-child(3) { background: #62c554; }
+  .example-body { padding: 22px 24px; }
+  .example-body .you, .example-body .claude { font-size: 14.5px; line-height: 1.6; }
+  .example-body .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--fg-faint); margin: 0 0 6px;
   }
+  .example-body .you-text {
+    background: var(--bg-soft); border-radius: 8px; padding: 12px 14px; font-style: italic;
+    margin: 0 0 20px;
+  }
+  .example-output {
+    font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--bg-code); color: #e8e6e1;
+    padding: 18px 20px; border-radius: 8px; margin: 8px 0;
+    overflow-x: auto;
+  }
+  .example-output .hi { color: #ed6a5e; font-weight: 600; }
+  .example-output .lo { color: #62c554; font-weight: 600; }
+  .example-output .num { color: #f5bf4f; font-weight: 600; }
+  .example-output .strike { text-decoration: line-through; color: #888; }
+  .example-output .arrow { color: var(--accent); }
+
+  /* Comparison table */
+  table {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    margin: 16px 0 24px;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+    font-size: 14.5px;
+    background: var(--bg-card);
+    box-shadow: var(--shadow);
+  }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg-soft); font-size: 13px; font-weight: 600; color: var(--fg-muted); }
   tr:last-child td { border-bottom: 0; }
   td:first-child { font-weight: 500; }
-  .compare-yes { color: #2d8659; font-weight: 500; }
-  .compare-no { color: #b85a4d; font-weight: 500; }
-  .compare-meh { color: #c89a3c; font-weight: 500; }
+  .yes { color: var(--green); font-weight: 500; }
+  .no { color: var(--red); font-weight: 500; }
+  .meh { color: var(--accent); font-weight: 500; }
 
+  /* Code */
   code {
     font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-    background: #f0ede6; padding: 2px 6px; border-radius: 4px;
+    background: var(--bg-code-inline); padding: 2px 6px; border-radius: 4px;
   }
   pre {
     font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-    background: #1a1a1a; color: #e8e6e1; padding: 14px 16px; border-radius: 6px;
+    background: var(--bg-code); color: #e8e6e1;
+    padding: 16px 18px; border-radius: 8px;
     overflow-x: auto; margin: 8px 0 12px;
+    box-shadow: var(--shadow);
   }
-  pre code {
-    background: transparent; padding: 0; color: inherit; font-size: inherit;
-  }
+  pre code { background: transparent; padding: 0; color: inherit; font-size: inherit; }
 
   details {
     margin: 16px 0;
-    border: 1px solid #e0ddd5; border-radius: 6px;
-    background: #fff;
-  }
-  @media (prefers-color-scheme: dark) {
-    details { background: #1f1d18; border-color: #3d3a30; }
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg-card);
+    overflow: hidden;
   }
   details summary {
-    cursor: pointer;
-    padding: 14px 18px;
-    font-weight: 500;
-    list-style: none;
+    cursor: pointer; padding: 14px 18px; font-weight: 500; list-style: none;
+    transition: background 0.15s;
   }
+  details summary:hover { background: var(--bg-soft); }
   details summary::-webkit-details-marker { display: none; }
-  details summary::before { content: "▸ "; color: #888; transition: transform 0.15s; display: inline-block; }
+  details summary::before { content: "▸ "; color: var(--fg-faint); transition: transform 0.15s; display: inline-block; }
   details[open] summary::before { transform: rotate(90deg); }
   details > *:not(summary) { padding: 0 18px 14px; }
   details pre { margin: 8px 18px 14px; }
 
-  .footer {
-    margin-top: 56px;
-    padding-top: 20px;
-    border-top: 1px solid #e0ddd5;
-    color: #888; font-size: 14px;
+  /* Callout */
+  .callout {
+    background: var(--accent-soft); border-left: 3px solid var(--accent);
+    padding: 14px 18px; border-radius: 4px;
+    margin: 16px 0; font-size: 14.5px;
   }
-  @media (prefers-color-scheme: dark) { .footer { border-color: #3d3a30; } }
-  .footer a { color: inherit; }
+  .callout strong { color: var(--fg); }
 
-  @media (max-width: 540px) {
-    body { padding: 24px 16px 60px; }
-    h1 { font-size: 26px; }
-    .card { padding: 18px 18px; }
-    .card.recommended { padding: 17px 17px; }
-    .url-box button { padding: 0 14px; min-width: 70px; font-size: 13px; }
+  /* FAQ */
+  .faq { margin: 16px 0; }
+  .faq details { margin: 8px 0; }
+  .faq summary { font-weight: 600; }
+
+  /* Footer */
+  .footer {
+    margin-top: 80px; padding: 32px 0 60px;
+    border-top: 1px solid var(--border);
+    color: var(--fg-faint); font-size: 14px;
+  }
+  .footer a { color: inherit; text-decoration-color: var(--border); }
+  .footer a:hover { text-decoration-color: var(--fg-faint); }
+  .footer .row { margin: 6px 0; }
+  .footer .privacy { font-size: 13px; line-height: 1.55; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+  /* Animations */
+  .fade-in { animation: fadeIn 0.6s ease-out backwards; }
+  .fade-in-1 { animation-delay: 0.05s; }
+  .fade-in-2 { animation-delay: 0.15s; }
+  .fade-in-3 { animation-delay: 0.25s; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .hero { padding: 36px 0 16px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 22px; margin-top: 48px; }
+    .tagline { font-size: 16px; }
+    .card { padding: 20px 18px; }
+    .card.recommended { padding: 19px 17px; }
+    .card.recommended::before { left: 14px; font-size: 10px; }
+    .url-box button { padding: 0 16px; min-width: 80px; font-size: 13px; }
+    .example-body { padding: 16px 14px; }
   }
 </style>
 </head>
 <body>
 
-<h1>Humanizer MCP</h1>
-<p class="tagline">A Claude tool that scores your text for AI-detection risk and suggests, line by line, what to change.</p>
-<p class="subtagline">Open source · MIT licensed · works in claude.ai web, Claude Desktop, and Claude for Chrome</p>
+<div class="container">
 
-<h2>1. Copy this URL</h2>
-<p>This is the connector URL — paste it into Claude in the next step.</p>
-<div class="url-box">
-  <input id="connector-url" readonly value="https://humanizer-api.analyticadss.com/mcp">
-  <button id="copy-btn" onclick="copyUrl()">Copy</button>
-</div>
-
-<h2>2. Pick a path</h2>
-<p>All three give you the same five tools in Claude. The first is the easiest.</p>
-
-<div class="cards">
-
-  <div class="card recommended">
-    <h3>Custom Connector — paste a URL</h3>
-    <div class="badges">
-      <span class="badge">~30 seconds</span>
-      <span class="badge">No install</span>
-      <span class="badge">All Claude surfaces</span>
+  <!-- HERO -->
+  <header class="hero fade-in">
+    <span class="eyebrow"><span class="dot"></span>Live · MIT licensed · v0.1.1</span>
+    <h1>Stop sounding <span class="gradient">like an AI</span>.</h1>
+    <p class="tagline">A Claude tool that scores your text for AI-detection risk and tells you, line by line, what to change. Works in claude.ai web, the Claude desktop app, and Claude for Chrome. <strong>Free, open source, no signup.</strong></p>
+    <div class="badges-hero">
+      <a href="https://github.com/aousabdo/humanizer-mcp">⭐ GitHub</a>
+      <a href="https://pypi.org/project/humanizer-mcp/">PyPI</a>
+      <a href="https://www.npmjs.com/package/humanizer-mcp">npm</a>
+      <span>5 tools · 8 detection signals · 0 telemetry</span>
     </div>
-    <p class="who">Best for everyone with a Claude account, including the free plan (free is limited to 1 custom connector).</p>
-    <ol>
-      <li>In Claude, click your avatar → <strong>Settings</strong> → <strong>Connectors</strong>.</li>
-      <li>Click <strong>Add custom connector</strong>.</li>
-      <li>Paste the URL from above into the <em>Remote MCP server URL</em> field.</li>
-      <li>Click <strong>Save</strong>. The five <code>humanizer_*</code> tools appear in any chat.</li>
-    </ol>
+  </header>
+
+  <!-- STEP 1 -->
+  <h2 class="fade-in fade-in-1"><span class="num">1</span>Copy this URL</h2>
+  <p class="lead">This is the connector URL. You'll paste it into Claude in the next step.</p>
+  <div class="url-box fade-in fade-in-1">
+    <input id="connector-url" readonly value="https://humanizer-api.analyticadss.com/mcp">
+    <button id="copy-btn" onclick="copyUrl()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <span id="copy-label">Copy</span>
+    </button>
   </div>
 
-  <div class="card">
-    <h3>Skill — upload one file</h3>
-    <div class="badges">
-      <span class="badge">~2 minutes</span>
-      <span class="badge">No install</span>
-      <span class="badge">Estimated scoring</span>
+  <!-- STEP 2 -->
+  <h2 class="fade-in fade-in-2"><span class="num">2</span>Pick a path</h2>
+  <p class="lead">All three options give you the same five tools in Claude. The first is the easiest — most people should pick it.</p>
+
+  <div class="cards">
+
+    <!-- CONNECTOR CARD -->
+    <div class="card recommended fade-in fade-in-2">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <div>
+          <h3>Custom Connector</h3>
+          <p class="who" style="margin: 0;">Paste a URL. Best for everyone.</p>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge">~30 seconds</span>
+        <span class="badge">No install</span>
+        <span class="badge">Works on Free plan</span>
+      </div>
+      <ol>
+        <li>In Claude, click your avatar → <strong>Settings</strong> → <strong>Connectors</strong>.</li>
+        <li>Click <strong>Add custom connector</strong>.</li>
+        <li>Paste the URL from above into the <em>Remote MCP server URL</em> field.</li>
+        <li>Click <strong>Save</strong>. The five <code>humanizer_*</code> tools become available in any chat.</li>
+      </ol>
+      <p class="callout" style="margin-top: 16px;"><strong>Free plan note:</strong> claude.ai Free is limited to one custom connector. If you already have one, you'd need to remove it or upgrade to add this one.</p>
     </div>
-    <p class="who">Useful if your Claude account is already at the 1-connector free-tier limit, or if you don't want a hosted URL in the loop.</p>
-    <ol>
-      <li>Download the skill zip:
-        <br><a class="download-link" href="https://github.com/aousabdo/humanizer-mcp/raw/main/skill/humanizer-mcp.zip">humanizer-mcp.zip (5 KB)</a>
-      </li>
-      <li>In Claude, go to <strong>Settings</strong> → <strong>Capabilities</strong> → <strong>Skills</strong>.</li>
-      <li>Click <strong>Upload skill</strong>, pick the file, and click Open.</li>
-    </ol>
-    <p style="font-size: 13.5px; color: #888; margin: 10px 0 0;">The skill embeds the same banned-word list and scoring rubric as the MCP, but Claude estimates the math instead of computing it. Lower precision; zero infrastructure.</p>
-  </div>
 
-  <div class="card">
-    <h3>MCP server — install locally</h3>
-    <div class="badges">
-      <span class="badge">~5 minutes</span>
-      <span class="badge">Light technical setup</span>
-      <span class="badge">Most accurate</span>
+    <!-- SKILL CARD -->
+    <div class="card fade-in fade-in-2">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div>
+          <h3>Skill — upload one file</h3>
+          <p class="who" style="margin: 0;">For users at the 1-connector free-tier limit.</p>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge">~2 minutes</span>
+        <span class="badge">No install</span>
+        <span class="badge">Estimated scoring</span>
+      </div>
+      <p style="font-size: 14.5px; margin: 14px 0 8px;">Download the skill, then upload it to Claude:</p>
+      <a class="download-link" href="https://github.com/aousabdo/humanizer-mcp/raw/main/skill/humanizer-mcp.zip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        humanizer-mcp.zip · 5 KB
+      </a>
+      <ol>
+        <li>In Claude, go to <strong>Settings</strong> → <strong>Capabilities</strong> → <strong>Skills</strong>.</li>
+        <li>Click <strong>Upload skill</strong>, pick the file, click Open.</li>
+      </ol>
+      <p style="font-size: 13.5px; color: var(--fg-faint); margin: 14px 0 0;">The skill embeds the same banned-word list and scoring rubric, but Claude estimates the math instead of computing it. Lower precision; zero infrastructure.</p>
     </div>
-    <p class="who">Best for developers, or for users who want everything to run on their own machine (no data leaves the laptop).</p>
 
-    <p><strong>Claude Code:</strong></p>
-    <pre><code>claude mcp add humanizer -- uvx humanizer-mcp</code></pre>
+    <!-- LOCAL CARD -->
+    <div class="card fade-in fade-in-3">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </div>
+        <div>
+          <h3>Run locally</h3>
+          <p class="who" style="margin: 0;">For developers — text never leaves your machine.</p>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge">~5 minutes</span>
+        <span class="badge">Light technical setup</span>
+        <span class="badge">Most accurate</span>
+        <span class="badge">Fully private</span>
+      </div>
 
-    <details>
-      <summary>Claude Desktop config (macOS / Windows / Linux)</summary>
-      <p>Edit <code>claude_desktop_config.json</code> and add this under <code>mcpServers</code>:</p>
-      <pre><code>{
+      <p style="font-size: 14.5px; margin: 14px 0 4px;"><strong>Claude Code:</strong></p>
+      <pre><code>claude mcp add humanizer -- uvx humanizer-mcp</code></pre>
+
+      <details style="margin: 12px -28px -26px; border-radius: 0 0 var(--radius) var(--radius); border-left: 0; border-right: 0; border-bottom: 0;">
+        <summary>Claude Desktop config (macOS / Windows / Linux)</summary>
+        <p>Edit <code>claude_desktop_config.json</code> and add this under <code>mcpServers</code>:</p>
+        <pre><code>{
   "mcpServers": {
     "humanizer": {
       "command": "uvx",
@@ -273,61 +466,148 @@
     }
   }
 }</code></pre>
-      <p style="font-size: 13.5px;">For a step-by-step Windows walkthrough with screenshots and troubleshooting, download the <a href="https://github.com/aousabdo/humanizer-mcp/raw/main/share/humanizer-mcp-boss-guide.pdf">3-page Windows guide PDF</a>.</p>
+        <p style="font-size: 13.5px;">For a step-by-step Windows walkthrough with screenshots and troubleshooting, see the <a href="https://github.com/aousabdo/humanizer-mcp/raw/main/share/humanizer-mcp-boss-guide.pdf">3-page Windows guide PDF</a>.</p>
+      </details>
+    </div>
+
+  </div>
+
+  <!-- STEP 3 -->
+  <h2 class="fade-in"><span class="num">3</span>Try it</h2>
+  <p class="lead">In any Claude chat, paste a paragraph and ask in plain language. The skill activates automatically when you mention AI detection.</p>
+
+  <div class="example-card">
+    <div class="example-head">
+      <div class="example-dots"><span></span><span></span><span></span></div>
+      <span>Example chat with humanizer-mcp installed</span>
+    </div>
+    <div class="example-body">
+      <p class="label">You</p>
+      <div class="you-text">Score this for AI tells:<br><br>"In today's rapidly evolving digital landscape, it's important to note that businesses must leverage cutting-edge solutions to navigate the multifaceted challenges they face."</div>
+
+      <p class="label">Claude</p>
+      <div class="example-output"><span class="hi">RISK SCORE: 75/100 — HIGH</span>
+
+<span style="color:#aaa">Signals that fired:</span>
+  • <span class="num">+25</span> AI-vocabulary hits: <span class="strike">landscape, leverage, navigate, multifaceted, paradigm</span>
+  • <span class="num">+10</span> AI-phrase hits: <span class="strike">"in today's rapidly evolving"</span>, <span class="strike">"it's important to note"</span>
+  • <span class="num">+20</span> Burstiness very low — sentences ~25 words, near-identical structure
+  • <span class="num">+10</span> Zero contractions in conversational tone
+  • <span class="num">+5</span> Weak first-person voice
+  • <span class="num">+5</span> No rhetorical questions in a piece this dense
+
+<span style="color:#aaa">Line-by-line fixes:</span>
+  1. "In today's rapidly evolving digital landscape" <span class="arrow">→</span> "In a fast-changing digital field"
+  2. "it's important to note that" <span class="arrow">→</span> <span style="color:#888">(delete — just say it)</span>
+  3. "leverage" <span class="arrow">→</span> "use" or "tap into"
+  4. "navigate" <span class="arrow">→</span> "handle" or "work through"
+  5. "multifaceted" <span class="arrow">→</span> "layered" or "varied"
+
+<span class="lo">PROJECTED AFTER FIXES: 15-25/100 (LOW)</span></div>
+    </div>
+  </div>
+
+  <p style="margin-top: 18px;"><strong>Other prompts that work:</strong></p>
+  <ul>
+    <li><em>"Run a quick vocab scan on this paragraph."</em></li>
+    <li><em>"Compare these two drafts. Did my edit lower the AI-detection risk?"</em></li>
+    <li><em>"Give me rewrite instructions for this academic abstract — keep it formal but fix the burstiness."</em></li>
+  </ul>
+
+  <div class="callout">
+    <strong>About slash commands.</strong> Claude has a built-in <code>/humanize-ai-text</code> skill that <em>rewrites</em> text. That's a different skill — it's not this tool. This tool is <code>humanizer-mcp</code>, and it scores rather than rewrites. The natural-language prompt above always works regardless of plan; some plans also expose <code>/humanizer-mcp</code> as a slash command if you've installed the skill version.
+  </div>
+
+  <!-- COMPARISON -->
+  <h2>What's the difference between options?</h2>
+  <p class="lead">The Connector and Local options give you the same deterministic Python-computed scoring. The Skill is a lightweight prompt-only version.</p>
+
+  <table>
+    <thead>
+      <tr><th>Capability</th><th>Connector / Local</th><th>Skill</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Banned-word list</td><td><span class="yes">✓ embedded in code</span></td><td><span class="yes">✓ embedded in markdown</span></td></tr>
+      <tr><td>Phrase pattern detection</td><td><span class="yes">✓ regex</span></td><td><span class="yes">✓ Claude eyeballs it</span></td></tr>
+      <tr><td>0–100 risk score</td><td><span class="yes">✓ deterministic</span></td><td><span class="no">✗ estimated</span></td></tr>
+      <tr><td>Burstiness math</td><td><span class="yes">✓ computed</span></td><td><span class="no">✗ estimated</span></td></tr>
+      <tr><td>Contraction ratio</td><td><span class="yes">✓ computed</span></td><td><span class="no">✗ estimated</span></td></tr>
+      <tr><td>Em-dash count</td><td><span class="yes">✓ exact</span></td><td><span class="meh">~ approximate</span></td></tr>
+      <tr><td>Same input → same output</td><td><span class="yes">✓</span></td><td><span class="no">✗ varies by run</span></td></tr>
+    </tbody>
+  </table>
+
+  <!-- HOW IT WORKS -->
+  <h2>How the score works</h2>
+  <p>The 0–100 score combines <strong>eight signals</strong>, each weighted by how predictive it is of AI-generated text:</p>
+  <ol>
+    <li><strong>AI-vocabulary hits</strong> — words statistically overrepresented in LLM output (<code>delve</code>, <code>crucial</code>, <code>leverage</code>, <code>myriad</code>…).</li>
+    <li><strong>AI-phrase hits</strong> — cliché structural tells (<code>it's important to note</code>, <code>in the ever-evolving</code>…).</li>
+    <li><strong>Burstiness</strong> — coefficient of variation of sentence lengths. AI writing clusters around a single length; humans mix short fragments and long digressions.</li>
+    <li><strong>Contractions</strong> — expanded forms (<em>it is</em>, <em>do not</em>) read as AI-formal; contractions read as conversational.</li>
+    <li><strong>Paragraph uniformity</strong> — AI tends to produce paragraphs of similar size.</li>
+    <li><strong>Rhetorical questions</strong> — near-absent in AI prose above 200 words.</li>
+    <li><strong>First-person voice</strong> — AI avoids <em>I</em>, <em>we</em>, <em>my</em>, <em>our</em> unless prompted.</li>
+    <li><strong>Em dashes</strong> — a ChatGPT signature; heavy use is a strong signal.</li>
+  </ol>
+  <p>Each signal adds to the score independently; the total is clamped to 100 and bucketed into <strong style="color:var(--green)">LOW (≤ 20)</strong>, <strong style="color:var(--accent)">MEDIUM (21–50)</strong>, or <strong style="color:var(--red)">HIGH (51+)</strong>.</p>
+  <p>The server doesn't rewrite — it diagnoses and prescribes. The LLM driving your chat does the rewrite. That's the point: a planner, not a black-box laundering service.</p>
+
+  <!-- FAQ -->
+  <h2>FAQ</h2>
+  <div class="faq">
+    <details>
+      <summary>Does this work with the free Claude plan?</summary>
+      <p>Yes. The Connector path works on every plan including Free, with one caveat: Free is limited to a single custom connector. If you already have one, the Skill option doesn't share that limit.</p>
+    </details>
+    <details>
+      <summary>Does my text get logged or stored anywhere?</summary>
+      <p>No. The MCP server is stateless and writes nothing to disk or any external service. The hosted instance at <code>humanizer-api.analyticadss.com</code> processes requests in memory and discards them. For absolute privacy, install locally — text never leaves your machine.</p>
+    </details>
+    <details>
+      <summary>Can it actually rewrite my text, or just analyze?</summary>
+      <p>It analyzes and prescribes — it gives you a structured fix list. Claude (the LLM driving your chat) does the actual rewriting based on those fixes. This split is intentional: deterministic measurement on one side, creative rewriting on the other. If you want a one-step rewrite, use Anthropic's built-in <code>/humanize-ai-text</code> skill (different tool, different approach).</p>
+    </details>
+    <details>
+      <summary>Will it bypass GPTZero / Originality.ai / Turnitin?</summary>
+      <p>It targets the same statistical signals those detectors use, so consistently scoring LOW here generally means lower readings on commercial detectors too — but no tool can guarantee bypass. The honest framing: this is a writing assistant, not a laundering service. If your goal is to defraud a teacher, it's not the right tool.</p>
+    </details>
+    <details>
+      <summary>How do I update to a new version?</summary>
+      <p>Connector users: nothing to do, the hosted instance always runs the latest. Skill users: re-download the zip and re-upload. Local users: <code>uvx</code> always pulls the latest, so you get updates automatically.</p>
+    </details>
+    <details>
+      <summary>Where's the source code?</summary>
+      <p>Open source on <a href="https://github.com/aousabdo/humanizer-mcp">GitHub</a> under MIT. Issues, PRs, and forks welcome.</p>
     </details>
   </div>
 
-</div>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="row">
+      <strong>Source &amp; bug tracker:</strong> <a href="https://github.com/aousabdo/humanizer-mcp">github.com/aousabdo/humanizer-mcp</a>
+    </div>
+    <div class="row">
+      <strong>Packages:</strong> <a href="https://pypi.org/project/humanizer-mcp/">PyPI</a> · <a href="https://www.npmjs.com/package/humanizer-mcp">npm</a> · <a href="https://github.com/aousabdo/humanizer-mcp/raw/main/share/humanizer-mcp-boss-guide.pdf">Windows install PDF</a>
+    </div>
+    <div class="privacy">
+      <strong>Privacy note:</strong> the hosted reference instance at <code>humanizer-api.analyticadss.com</code> is on a free Fly tier with no SLA and no privacy guarantees beyond "stateless, writes nothing to disk." For privacy-sensitive use, install locally (the third option above) or self-host with the included <a href="https://github.com/aousabdo/humanizer-mcp/blob/main/Dockerfile">Dockerfile</a>.
+    </div>
+    <div style="margin-top: 14px; font-size: 12px; color: var(--fg-faint);">MIT licensed · v0.1.1</div>
+  </footer>
 
-<h2>3. Try it</h2>
-<p>In any Claude chat, paste a paragraph and ask:</p>
-<pre><code>Score this for AI tells and tell me what to change.</code></pre>
-<p>You'll get a 0–100 risk score, the specific signals that fired, and a line-by-line list of suggested replacements. Other prompts that work:</p>
-<ul>
-  <li><em>"Run a quick vocab scan on this paragraph."</em></li>
-  <li><em>"Compare these two drafts. Did my edit lower the AI-detection risk?"</em></li>
-  <li><em>"Give me rewrite instructions for this academic abstract — keep it formal but fix the burstiness."</em></li>
-</ul>
-
-<h2>What's the difference?</h2>
-<p>The connector and the local install give you the same deterministic Python-computed scoring. The skill is a lightweight prompt-only version.</p>
-
-<table>
-  <thead>
-    <tr><th>Capability</th><th>Connector / MCP</th><th>Skill</th></tr>
-  </thead>
-  <tbody>
-    <tr><td>Banned-word list</td><td><span class="compare-yes">✓ embedded in code</span></td><td><span class="compare-yes">✓ embedded in markdown</span></td></tr>
-    <tr><td>Phrase pattern detection</td><td><span class="compare-yes">✓ regex</span></td><td><span class="compare-yes">✓ Claude eyeballs it</span></td></tr>
-    <tr><td>0–100 risk score</td><td><span class="compare-yes">✓ deterministic</span></td><td><span class="compare-no">✗ estimated</span></td></tr>
-    <tr><td>Burstiness math</td><td><span class="compare-yes">✓ computed</span></td><td><span class="compare-no">✗ estimated</span></td></tr>
-    <tr><td>Contraction ratio</td><td><span class="compare-yes">✓ computed</span></td><td><span class="compare-no">✗ estimated</span></td></tr>
-    <tr><td>Em-dash count</td><td><span class="compare-yes">✓ exact</span></td><td><span class="compare-meh">~ approximate</span></td></tr>
-    <tr><td>Same input → same output</td><td><span class="compare-yes">✓</span></td><td><span class="compare-no">✗ varies by run</span></td></tr>
-  </tbody>
-</table>
-
-<h2>How the score works</h2>
-<p>The 0–100 score combines eight signals: AI-vocabulary hits, AI-phrase hits, burstiness (sentence-length variance), contraction ratio, paragraph uniformity, rhetorical questions, first-person voice, and em-dash count. The total is bucketed into <strong>LOW</strong> (≤ 20), <strong>MEDIUM</strong> (21–50), or <strong>HIGH</strong> (51+). Full breakdown in the project <a href="https://github.com/aousabdo/humanizer-mcp#how-the-risk-score-works">README</a>.</p>
-
-<p>The server doesn't rewrite — it diagnoses and prescribes. The LLM driving your chat does the rewrite. That's the point: a planner, not a black-box laundering service.</p>
-
-<div class="footer">
-  <strong>Source &amp; bug tracker:</strong> <a href="https://github.com/aousabdo/humanizer-mcp">github.com/aousabdo/humanizer-mcp</a><br>
-  <strong>Packages:</strong> <a href="https://pypi.org/project/humanizer-mcp/">PyPI</a> · <a href="https://www.npmjs.com/package/humanizer-mcp">npm</a><br>
-  <strong>Privacy note:</strong> the hosted instance at <code>humanizer-api.analyticadss.com</code> is on a free Fly tier with no SLA. Your text passes through it during analysis. For privacy-sensitive use, install locally (the MCP option above) or self-host with the included <a href="https://github.com/aousabdo/humanizer-mcp/blob/main/Dockerfile">Dockerfile</a>.<br>
-  <span style="font-size: 12px; color: #aaa;">MIT licensed</span>
 </div>
 
 <script>
   function copyUrl() {
     const input = document.getElementById('connector-url');
     const btn = document.getElementById('copy-btn');
+    const label = document.getElementById('copy-label');
     input.select();
     navigator.clipboard.writeText(input.value).then(() => {
-      btn.textContent = 'Copied';
+      label.textContent = 'Copied';
       btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+      setTimeout(() => { label.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
     });
   }
 
