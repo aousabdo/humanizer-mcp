@@ -16,7 +16,8 @@ Rather than running your prose through a black-box "humanizer," this server anal
 
 | Tool | What it does |
 |---|---|
-| `humanizer_analyze_ai_tells` | Full analysis with risk score and fix recommendations. |
+| `humanizer_humanize_text` | **Returns the rewritten text.** Applies vocabulary swaps, phrase removal, contractions, em-dash cleanup, plus before/after scores. The LLM caller polishes for context. |
+| `humanizer_analyze_ai_tells` | Full analysis with risk score, fix recommendations, *and* a mechanical rewrite as a starting point. |
 | `humanizer_quick_vocab_scan` | Fast word- and phrase-level scan with replacement suggestions. |
 | `humanizer_get_rewrite_instructions` | Step-by-step rewrite plan, tailored to text type (blog / business / academic / email / general). |
 | `humanizer_compare_before_after` | Side-by-side metrics for an original and a rewrite, with a PASS / IMPROVED / NEEDS MORE WORK verdict. |

@@ -598,6 +598,121 @@ def compute_risk_score(analysis: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# Map of expanded forms → contracted forms for mechanical rewriting.
+# These are case-aware (sentence-initial gets capitalized).
+_CONTRACTION_MAP: dict[str, str] = {
+    "it is": "it's",
+    "that is": "that's",
+    "do not": "don't",
+    "does not": "doesn't",
+    "did not": "didn't",
+    "can not": "can't",
+    "cannot": "can't",
+    "could not": "couldn't",
+    "would not": "wouldn't",
+    "should not": "shouldn't",
+    "will not": "won't",
+    "is not": "isn't",
+    "are not": "aren't",
+    "was not": "wasn't",
+    "were not": "weren't",
+    "have not": "haven't",
+    "has not": "hasn't",
+    "had not": "hadn't",
+    "i am": "I'm",
+    "you are": "you're",
+    "we are": "we're",
+    "they are": "they're",
+    "i have": "I've",
+    "you have": "you've",
+    "we have": "we've",
+    "they have": "they've",
+    "i will": "I'll",
+    "you will": "you'll",
+    "we will": "we'll",
+    "they will": "they'll",
+    "let us": "let's",
+}
+
+
+def apply_mechanical_fixes(text: str) -> tuple[str, list[str]]:
+    """Apply deterministic word/phrase substitutions to humanize AI text.
+
+    Handles the mechanical-only signals: AI vocabulary swaps, AI phrase removal,
+    em-dash → comma, and expanded → contracted forms. Does NOT touch sentence
+    structure, voice, or burstiness — those require semantic understanding and
+    are left for the LLM to refine afterward.
+
+    Returns the rewritten text and a list of human-readable change descriptions.
+    """
+    rewrite = text
+    changes: list[str] = []
+
+    # 1. AI phrase removal — do these BEFORE vocab so we don't double-edit.
+    #    Most AI phrases are filler; removing them is safer than substituting.
+    for phrase in AI_PHRASES:
+        pattern = re.compile(re.escape(phrase) + r"[\s,]*", re.IGNORECASE)
+        if pattern.search(rewrite):
+            new = pattern.sub("", rewrite)
+            if new != rewrite:
+                changes.append(f'removed phrase: "{phrase}"')
+                rewrite = new
+
+    # 2. Vocabulary swaps — replace each banned word with its first replacement.
+    for word, replacements in AI_VOCABULARY.items():
+        if not replacements or not replacements[0]:
+            # Words mapped to "" mean "delete entirely" — strip word + trailing space.
+            pattern = re.compile(r"\b" + re.escape(word) + r"\b[\s,]*", re.IGNORECASE)
+            if pattern.search(rewrite):
+                new = pattern.sub("", rewrite)
+                if new != rewrite:
+                    changes.append(f'deleted word: "{word}"')
+                    rewrite = new
+            continue
+        replacement = replacements[0]
+        pattern = re.compile(r"\b" + re.escape(word) + r"\b", re.IGNORECASE)
+
+        def _swap(match: re.Match[str], _word: str = word, _repl: str = replacement) -> str:
+            matched = match.group(0)
+            if matched.isupper():
+                return _repl.upper()
+            if matched[0].isupper():
+                return _repl[0].upper() + _repl[1:]
+            return _repl
+
+        if pattern.search(rewrite):
+            rewrite = pattern.sub(_swap, rewrite)
+            changes.append(f'"{word}" → "{replacement}"')
+
+    # 3. Contraction injection — read more conversational.
+    for expanded, contracted in _CONTRACTION_MAP.items():
+        pattern = re.compile(r"\b" + re.escape(expanded) + r"\b", re.IGNORECASE)
+
+        def _contract(match: re.Match[str], _exp: str = expanded, _con: str = contracted) -> str:
+            matched = match.group(0)
+            if matched[0].isupper() and not _con.startswith("I"):
+                return _con[0].upper() + _con[1:]
+            return _con
+
+        if pattern.search(rewrite):
+            rewrite = pattern.sub(_contract, rewrite)
+            changes.append(f'"{expanded}" → "{contracted}"')
+
+    # 4. Em-dash cleanup — drop the ChatGPT signature.
+    if "—" in rewrite or "–" in rewrite:
+        before = rewrite
+        rewrite = rewrite.replace(" — ", ", ").replace("—", ",").replace("–", ",")
+        if rewrite != before:
+            changes.append("replaced em/en dashes with commas")
+
+    # 5. Collapse double spaces and stray spaces before punctuation.
+    rewrite = re.sub(r" +", " ", rewrite)
+    rewrite = re.sub(r" ([,.!?;:])", r"\1", rewrite)
+    rewrite = re.sub(r"^\s+|\s+$", "", rewrite, flags=re.MULTILINE)
+
+    return rewrite, changes
+
+
 # ─────────────────────────────────────────────────────────────────────
 # Input Models
 # ─────────────────────────────────────────────────────────────────────
@@ -773,6 +888,17 @@ async def analyze_ai_tells(params: AnalyzeTextInput) -> str:
         )
 
     analysis["recommendations"] = recommendations
+
+    # Always include a mechanical rewrite so callers receive an actual
+    # humanized version, not just analysis. The LLM should refine this further.
+    mechanical_rewrite, applied_changes = apply_mechanical_fixes(text)
+    analysis["mechanical_rewrite"] = mechanical_rewrite
+    analysis["mechanical_rewrite_changes"] = applied_changes
+    analysis["instruction_to_assistant"] = (
+        "After presenting the analysis, also present the mechanical_rewrite "
+        "to the user — but polish it first: vary sentence length, add first-person "
+        "voice if missing, and smooth any awkward edits. Show before/after scores."
+    )
 
     return json.dumps(analysis, indent=2)
 
@@ -994,6 +1120,101 @@ async def get_rewrite_instructions(params: HumanizeTextInput) -> str:
             "preserve_meaning": params.preserve_meaning,
             "rewrite_instructions": instructions,
             "instruction_count": len(instructions),
+        },
+        indent=2,
+    )
+
+
+@mcp.tool(
+    name="humanizer_humanize_text",
+    annotations={
+        "title": "Humanize AI-Generated Text",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False,
+    },
+)
+async def humanize_text(params: HumanizeTextInput) -> str:
+    """Rewrite AI-generated text to sound human, returning the humanized version.
+
+    Applies a deterministic mechanical pass (vocabulary swaps, AI-phrase removal,
+    contraction injection, em-dash cleanup) and returns the rewritten text plus
+    a list of remaining issues that the LLM caller should refine for context.
+
+    IMPORTANT — for the model calling this tool: the `humanized_text` field in
+    the response is a starting point, NOT the final answer. After receiving it,
+    YOU must:
+      1. Read the `polish_instructions` field.
+      2. Refine the text to fix burstiness (vary sentence length aggressively),
+         add first-person voice if missing, and smooth any awkward edits the
+         mechanical pass introduced.
+      3. Present the FINAL polished version to the user as your reply, along
+         with the before/after risk scores so they can see the improvement.
+
+    Args:
+        params (HumanizeTextInput): Text, text type, and voice preferences.
+
+    Returns:
+        str: JSON with humanized_text (mechanical rewrite), original_score,
+             rewrite_score, applied_changes, and polish_instructions.
+    """
+    text = params.text
+    text_type = params.text_type
+    voice_notes = params.voice_notes
+
+    humanized, changes = apply_mechanical_fixes(text)
+
+    def _score(t: str) -> dict[str, Any]:
+        return compute_risk_score(
+            {
+                "word_count": count_words(t),
+                "ai_vocabulary_count": len(find_ai_vocabulary(t)),
+                "ai_phrase_count": len(find_ai_phrases(t)),
+                "burstiness": calculate_burstiness(sentence_lengths(t)),
+                "contractions": check_contraction_usage(t),
+                "paragraph_uniformity": check_paragraph_uniformity(t),
+                "rhetorical_questions": check_rhetorical_questions(t),
+                "first_person": check_first_person(t),
+                "em_dash_count": count_em_dashes(t),
+            }
+        )
+
+    original_score = _score(text)
+    rewrite_score = _score(humanized)
+
+    polish: list[str] = [
+        "Vary sentence length aggressively — mix 4-word punches with longer 25+ word sentences.",
+        "Add first-person voice if appropriate (I, we, my, our) — the analyzer flags weak voice.",
+        "Smooth any awkward word-swaps the mechanical pass introduced. Read it aloud.",
+        "Take a position. Assert something specific. AI prose hedges; humans commit.",
+    ]
+    if text_type.value in ("blog", "general"):
+        polish.append(
+            "Drop in one rhetorical question if the piece is over 200 words — humans use them, AI rarely does."
+        )
+    if text_type.value == "academic":
+        polish.append(
+            "Keep it formal — skip contractions and first-person if the publication conventions disallow them."
+        )
+    if voice_notes:
+        polish.append(f"Voice direction from the user: {voice_notes}")
+
+    return json.dumps(
+        {
+            "humanized_text": humanized,
+            "original_score": original_score,
+            "rewrite_score": rewrite_score,
+            "score_delta": original_score["risk_score"] - rewrite_score["risk_score"],
+            "applied_changes": changes,
+            "remaining_signals": rewrite_score["factors"],
+            "polish_instructions": polish,
+            "instruction_to_assistant": (
+                "The humanized_text above is a deterministic mechanical pass — present "
+                "a polished version to the user that incorporates the polish_instructions, "
+                "and show them the score improvement (original_score → rewrite_score)."
+            ),
+            "text_type": text_type.value,
         },
         indent=2,
     )

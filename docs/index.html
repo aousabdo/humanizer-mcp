@@ -574,6 +574,7 @@
 
   <p style="margin-top: 24px;"><strong>Other prompts that work:</strong></p>
   <ul>
+    <li><em>"Humanize this paragraph"</em> — returns the rewritten text with score improvement</li>
     <li><em>"Run a quick vocab scan on this paragraph."</em></li>
     <li><em>"Compare these two drafts. Did my edit lower the AI-detection risk?"</em></li>
     <li><em>"Give me rewrite instructions for this academic abstract — keep it formal but fix the burstiness."</em></li>
@@ -627,8 +628,8 @@
       <p>No. The MCP server is stateless and writes nothing to disk or any external service. The hosted instance at <code>humanizer-api.analyticadss.com</code> processes requests in memory and discards them. For absolute privacy, install locally — text never leaves your machine.</p>
     </details>
     <details>
-      <summary>Can it actually rewrite my text, or just analyze?</summary>
-      <p>It analyzes and prescribes — it gives you a structured fix list. Claude (the LLM driving your chat) does the actual rewriting based on those fixes. This split is intentional: deterministic measurement on one side, creative rewriting on the other. If you want a one-step rewrite, use Anthropic's built-in <code>/humanize-ai-text</code> skill (different tool, different approach).</p>
+      <summary>Does it just analyze, or does it also rewrite?</summary>
+      <p>Both. The <code>humanizer_humanize_text</code> tool returns a humanized version of your text — vocabulary swapped, AI phrases removed, contractions added, em-dashes cleaned up. Claude then polishes the mechanical pass for context (varying sentence length, adding voice, smoothing edits) and gives you the final rewrite alongside before/after scores. Just say <em>"humanize this"</em> and you'll get the rewritten text back.</p>
     </details>
     <details>
       <summary>Will it bypass GPTZero / Originality.ai / Turnitin?</summary>
