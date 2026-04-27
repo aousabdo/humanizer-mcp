@@ -113,6 +113,8 @@ mcp = FastMCP(SERVER_NAME)
 # Landing Page (HTTP only) — visited at the root URL when hosted
 # ─────────────────────────────────────────────────────────────────────
 
+_PUBLIC_LANDING_URL = "https://aousabdo.github.io/humanizer-mcp/"
+
 _LANDING_HTML = """<!doctype html>
 <html lang="en">
 <head>
@@ -257,13 +259,18 @@ _LANDING_HTML = """<!doctype html>
 
 @mcp.custom_route("/", methods=["GET"])
 async def landing_page(request):  # type: ignore[no-untyped-def]
-    """Friendly landing page so non-technical users get instructions, not a 404."""
-    from starlette.responses import HTMLResponse
+    """Redirect to the canonical landing page on GitHub Pages.
 
-    # Honor the proxy headers: Fly/Render/etc. terminate TLS at the edge and
-    # forward plain HTTP to the container, so request.url.scheme is "http"
-    # even when the user is on HTTPS. Anthropic's Custom Connector form
-    # rejects http:// URLs, so we must advertise the public scheme.
+    The in-server HTML page is kept as a fallback for self-hosted instances
+    that aren't backed by a public docs site. Set HUMANIZER_LANDING_URL=local
+    to opt into the embedded page instead of the redirect.
+    """
+    from starlette.responses import HTMLResponse, RedirectResponse
+
+    landing = os.environ.get("HUMANIZER_LANDING_URL", _PUBLIC_LANDING_URL)
+    if landing and landing != "local":
+        return RedirectResponse(url=landing, status_code=302)
+
     proto = request.headers.get("x-forwarded-proto", request.url.scheme)
     host = request.headers.get("host", request.url.hostname or "localhost")
     base_url = f"{proto}://{host}"
