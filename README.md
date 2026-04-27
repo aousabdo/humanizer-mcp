@@ -37,12 +37,13 @@ Rather than running your prose through a black-box "humanizer," this server anal
 
 Works in **claude.ai (web), Claude Desktop, and Claude for Chrome** — all four surfaces share the connector list once you're signed in. Available on every plan including Free (Free is limited to one custom connector).
 
+**Bring your own URL.** This server is open-source, so there's no public hosted instance — you (or whoever's setting it up) deploys it once with the included `Dockerfile`, then everyone uses that URL. See [Hosting](#hosting) below for one-click recipes (Render, Fly.io, Cloudflare Tunnel, plain Docker). Takes ~3 minutes.
+
+Once you have a URL like `https://humanizer-mcp.your-domain.com/mcp`:
+
 1. Open Claude → **Settings** → **Connectors**.
 2. Click **Add custom connector**.
-3. Paste the server URL (replace with your hosted instance — see [Hosting](#hosting) below):
-   ```
-   https://humanizer-mcp.onrender.com/mcp
-   ```
+3. Paste your server's URL (the one ending in `/mcp`).
 4. Save. The five `humanizer_*` tools become available in any chat.
 
 That's the whole install for non-technical users — they never touch a terminal.
