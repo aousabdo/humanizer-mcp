@@ -254,7 +254,13 @@ async def landing_page(request):  # type: ignore[no-untyped-def]
     """Friendly landing page so non-technical users get instructions, not a 404."""
     from starlette.responses import HTMLResponse
 
-    base_url = str(request.base_url).rstrip("/")
+    # Honor the proxy headers: Fly/Render/etc. terminate TLS at the edge and
+    # forward plain HTTP to the container, so request.url.scheme is "http"
+    # even when the user is on HTTPS. Anthropic's Custom Connector form
+    # rejects http:// URLs, so we must advertise the public scheme.
+    proto = request.headers.get("x-forwarded-proto", request.url.scheme)
+    host = request.headers.get("host", request.url.hostname or "localhost")
+    base_url = f"{proto}://{host}"
     return HTMLResponse(_LANDING_HTML.replace("__BASE_URL__", base_url))
 
 
