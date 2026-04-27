@@ -238,17 +238,14 @@
     background: var(--bg-soft); border-radius: 8px; padding: 12px 14px; font-style: italic;
     margin: 0 0 20px;
   }
-  .example-output {
-    font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
-    background: var(--bg-code); color: #e8e6e1;
-    padding: 18px 20px; border-radius: 8px; margin: 8px 0;
-    overflow-x: auto;
+  .claude-output {
+    font-size: 14.5px;
+    line-height: 1.65;
+    padding: 4px 0;
   }
-  .example-output .hi { color: #ed6a5e; font-weight: 600; }
-  .example-output .lo { color: #62c554; font-weight: 600; }
-  .example-output .num { color: #f5bf4f; font-weight: 600; }
-  .example-output .strike { text-decoration: line-through; color: #888; }
-  .example-output .arrow { color: var(--accent); }
+  .claude-output p { margin: 10px 0; }
+  .claude-output em { color: var(--fg); font-style: italic; }
+  .claude-output strong { color: var(--fg); }
 
   /* Comparison table */
   table {
@@ -479,35 +476,34 @@
   <div class="example-card">
     <div class="example-head">
       <div class="example-dots"><span></span><span></span><span></span></div>
-      <span>Example chat with humanizer-mcp installed</span>
+      <span>Real example — actual output from Claude with humanizer-mcp installed</span>
     </div>
     <div class="example-body">
       <p class="label">You</p>
-      <div class="you-text">Score this for AI tells:<br><br>"In today's rapidly evolving digital landscape, it's important to note that businesses must leverage cutting-edge solutions to navigate the multifaceted challenges they face."</div>
+      <div class="you-text">Score this for AI tells:<br><br>"In today's rapidly evolving digital landscape, businesses must leverage cutting-edge solutions to navigate the multifaceted challenges they face. Companies that embrace this paradigm shift will undoubtedly thrive. It's important to note that organizations should foster a comprehensive approach to streamline operations and bolster their competitive edge."</div>
 
       <p class="label">Claude</p>
-      <div class="example-output"><span class="hi">RISK SCORE: 75/100 — HIGH</span>
+      <div class="claude-output">
+        <p style="margin-top: 0;"><strong style="color: var(--accent); font-size: 16px;">Risk Score: 50/100 (MEDIUM)</strong></p>
+        <p>For 46 words, that's a hit rate of one flagged term every ~5 words — heavy. The math says MEDIUM, but the texture is unmistakably AI.</p>
 
-<span style="color:#aaa">Signals that fired:</span>
-  • <span class="num">+25</span> AI-vocabulary hits: <span class="strike">landscape, leverage, navigate, multifaceted, paradigm</span>
-  • <span class="num">+10</span> AI-phrase hits: <span class="strike">"in today's rapidly evolving"</span>, <span class="strike">"it's important to note"</span>
-  • <span class="num">+20</span> Burstiness very low — sentences ~25 words, near-identical structure
-  • <span class="num">+10</span> Zero contractions in conversational tone
-  • <span class="num">+5</span> Weak first-person voice
-  • <span class="num">+5</span> No rhetorical questions in a piece this dense
+        <p><strong>AI vocabulary (9 hits in 46 words):</strong> <em>landscape, leverage, multifaceted, navigate, paradigm, foster, comprehensive, streamline, bolster</em> — almost a full bingo card.</p>
 
-<span style="color:#aaa">Line-by-line fixes:</span>
-  1. "In today's rapidly evolving digital landscape" <span class="arrow">→</span> "In a fast-changing digital field"
-  2. "it's important to note that" <span class="arrow">→</span> <span style="color:#888">(delete — just say it)</span>
-  3. "leverage" <span class="arrow">→</span> "use" or "tap into"
-  4. "navigate" <span class="arrow">→</span> "handle" or "work through"
-  5. "multifaceted" <span class="arrow">→</span> "layered" or "varied"
+        <p><strong>AI phrases (2 hits):</strong> <em>"in today's rapidly evolving"</em> and <em>"it's important to note"</em> — both textbook GPT throat-clearing.</p>
 
-<span class="lo">PROJECTED AFTER FIXES: 15-25/100 (LOW)</span></div>
+        <p><strong>Structural issues:</strong> burstiness 0.293 (sentences cluster around 9–19 words), no first-person voice, zero stance. The prose asserts nothing — it just gestures at the idea that companies should do business things.</p>
+
+        <p><strong>A humanized version, for reference:</strong></p>
+        <blockquote style="border-left: 3px solid var(--accent); margin: 8px 0; padding: 6px 14px; color: var(--fg-muted); font-style: italic;">Markets shift fast, and most companies are still running on tools built for the last decade. The winners aren't the ones who buy more software — they're the ones who actually rewire how their teams work. That's the real problem.</blockquote>
+
+        <p style="margin-bottom: 0;">Three sentences, 36 words, takes a position, drops every flagged term. That would score in the single digits.</p>
+      </div>
     </div>
   </div>
 
-  <p style="margin-top: 18px;"><strong>Other prompts that work:</strong></p>
+  <p style="font-size: 13.5px; color: var(--fg-faint); margin-top: 14px;">↑ This is a real, deterministic 50/100 — paste the same paragraph and you'll get the same score (the math is fixed). The exact prose Claude wraps around it varies — Claude reformats the structured tool output into conversational language. If you'd rather get terse structured output, ask for it: <em>"score this and give me a bulleted breakdown."</em></p>
+
+  <p style="margin-top: 24px;"><strong>Other prompts that work:</strong></p>
   <ul>
     <li><em>"Run a quick vocab scan on this paragraph."</em></li>
     <li><em>"Compare these two drafts. Did my edit lower the AI-detection risk?"</em></li>
