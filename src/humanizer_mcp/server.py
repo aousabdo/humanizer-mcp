@@ -171,6 +171,12 @@ _LANDING_HTML = """<!doctype html>
     background: #1a1a1a; color: #e8e6e1; padding: 12px; border-radius: 6px;
     overflow-x: auto; margin: 8px 0;
   }
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
   details { margin: 24px 0; }
   details summary { cursor: pointer; font-weight: 500; padding: 8px 0; }
   .footer { margin-top: 48px; color: #888; font-size: 14px; }
