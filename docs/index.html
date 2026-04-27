@@ -247,6 +247,37 @@
   .claude-output em { color: var(--fg); font-style: italic; }
   .claude-output strong { color: var(--fg); }
 
+  .structured-output {
+    font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: var(--bg-code); color: #e8e6e1;
+    padding: 18px 20px; border-radius: 8px; margin: 8px 0;
+    overflow-x: auto;
+  }
+  .structured-output .hi { color: #ed6a5e; font-weight: 600; }
+  .structured-output .lo { color: #62c554; font-weight: 600; }
+  .structured-output .num { color: #f5bf4f; font-weight: 600; }
+  .structured-output .strike { text-decoration: line-through; color: #888; }
+  .structured-output .arrow { color: var(--accent); }
+
+  .example-tabs {
+    display: flex; gap: 4px; margin: 24px 0 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .example-tab {
+    background: none; border: 0;
+    padding: 10px 16px;
+    font: inherit; font-size: 13px; font-weight: 500;
+    color: var(--fg-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+  .example-tab:hover { color: var(--fg); }
+  .example-tab.active { color: var(--fg); border-bottom-color: var(--accent); }
+  .example-pane { display: none; }
+  .example-pane.active { display: block; }
+
   /* Comparison table */
   table {
     width: 100%; border-collapse: separate; border-spacing: 0;
@@ -476,27 +507,65 @@
   <div class="example-card">
     <div class="example-head">
       <div class="example-dots"><span></span><span></span><span></span></div>
-      <span>Real example — actual output from Claude with humanizer-mcp installed</span>
+      <span>Same input, two output styles — switch with the tabs below</span>
     </div>
     <div class="example-body">
-      <p class="label">You</p>
+      <p class="label">You (works with either install path)</p>
       <div class="you-text">Score this for AI tells:<br><br>"In today's rapidly evolving digital landscape, businesses must leverage cutting-edge solutions to navigate the multifaceted challenges they face. Companies that embrace this paradigm shift will undoubtedly thrive. It's important to note that organizations should foster a comprehensive approach to streamline operations and bolster their competitive edge."</div>
 
-      <p class="label">Claude</p>
-      <div class="claude-output">
-        <p style="margin-top: 0;"><strong style="color: var(--accent); font-size: 16px;">Risk Score: 50/100 (MEDIUM)</strong></p>
-        <p>For 46 words, that's a hit rate of one flagged term every ~5 words — heavy. The math says MEDIUM, but the texture is unmistakably AI.</p>
+      <div class="example-tabs">
+        <button class="example-tab active" onclick="switchTab(event,'mcp')">MCP / Connector — prose</button>
+        <button class="example-tab" onclick="switchTab(event,'skill')">Skill — structured</button>
+      </div>
 
-        <p><strong>AI vocabulary (9 hits in 46 words):</strong> <em>landscape, leverage, multifaceted, navigate, paradigm, foster, comprehensive, streamline, bolster</em> — almost a full bingo card.</p>
+      <div class="example-pane active" id="pane-mcp">
+        <p class="label" style="margin-top: 18px;">Claude (using MCP / Connector)</p>
+        <div class="claude-output">
+          <p style="margin-top: 0;"><strong style="color: var(--accent); font-size: 16px;">Risk Score: 50/100 (MEDIUM)</strong></p>
+          <p>For 46 words, that's a hit rate of one flagged term every ~5 words — heavy. The math says MEDIUM, but the texture is unmistakably AI.</p>
 
-        <p><strong>AI phrases (2 hits):</strong> <em>"in today's rapidly evolving"</em> and <em>"it's important to note"</em> — both textbook GPT throat-clearing.</p>
+          <p><strong>AI vocabulary (9 hits in 46 words):</strong> <em>landscape, leverage, multifaceted, navigate, paradigm, foster, comprehensive, streamline, bolster</em> — almost a full bingo card.</p>
 
-        <p><strong>Structural issues:</strong> burstiness 0.293 (sentences cluster around 9–19 words), no first-person voice, zero stance. The prose asserts nothing — it just gestures at the idea that companies should do business things.</p>
+          <p><strong>AI phrases (2 hits):</strong> <em>"in today's rapidly evolving"</em> and <em>"it's important to note"</em> — both textbook GPT throat-clearing.</p>
 
-        <p><strong>A humanized version, for reference:</strong></p>
-        <blockquote style="border-left: 3px solid var(--accent); margin: 8px 0; padding: 6px 14px; color: var(--fg-muted); font-style: italic;">Markets shift fast, and most companies are still running on tools built for the last decade. The winners aren't the ones who buy more software — they're the ones who actually rewire how their teams work. That's the real problem.</blockquote>
+          <p><strong>Structural issues:</strong> burstiness 0.293 (sentences cluster around 9–19 words), no first-person voice, zero stance. The prose asserts nothing — it just gestures at the idea that companies should do business things.</p>
 
-        <p style="margin-bottom: 0;">Three sentences, 36 words, takes a position, drops every flagged term. That would score in the single digits.</p>
+          <p><strong>A humanized version, for reference:</strong></p>
+          <blockquote style="border-left: 3px solid var(--accent); margin: 8px 0; padding: 6px 14px; color: var(--fg-muted); font-style: italic;">Markets shift fast, and most companies are still running on tools built for the last decade. The winners aren't the ones who buy more software — they're the ones who actually rewire how their teams work. That's the real problem.</blockquote>
+
+          <p style="margin-bottom: 0;">Three sentences, 36 words, takes a position, drops every flagged term. That would score in the single digits.</p>
+        </div>
+        <p style="font-size: 13.5px; color: var(--fg-faint); margin-top: 14px;">↑ The MCP returns structured tool output (a Python dict). Claude reformats it into prose with bold headings, opinionated commentary, and often a humanized rewrite at the end. The score itself is deterministic — paste the same paragraph and you'll get exactly 50 every time. The wrapping prose varies.</p>
+      </div>
+
+      <div class="example-pane" id="pane-skill">
+        <p class="label" style="margin-top: 18px;">Claude (using Skill)</p>
+        <div class="structured-output"><span class="hi">RISK SCORE: 50/100 — MEDIUM</span>
+
+<span style="color:#aaa">WHY THIS SCORED MEDIUM:</span>
+  • <span class="num">+25</span> AI-vocabulary hits: <span class="strike">landscape, leverage, navigate, multifaceted, paradigm, foster, comprehensive, streamline, bolster</span>
+  • <span class="num">+10</span> AI-phrase hits: <span class="strike">"in today's rapidly evolving"</span>, <span class="strike">"it's important to note"</span>
+  • <span class="num">+10</span> Burstiness 0.29 — sentences cluster around 9–19 words
+  • <span class="num">+5</span>  Weak first-person voice (zero markers in 46 words)
+
+<span style="color:#aaa">LINE-BY-LINE FIXES:</span>
+  1. "in today's rapidly evolving digital landscape" <span class="arrow">→</span> "in a fast-changing digital field"
+  2. "it's important to note that" <span class="arrow">→</span> <span style="color:#888">(delete — just say it)</span>
+  3. "leverage" <span class="arrow">→</span> "use" or "tap into"
+  4. "navigate" <span class="arrow">→</span> "handle" or "work through"
+  5. "multifaceted" <span class="arrow">→</span> "layered" or "varied"
+  6. "paradigm shift" <span class="arrow">→</span> "shift" or "change"
+  7. "foster a comprehensive approach" <span class="arrow">→</span> "build a thorough plan"
+  8. "streamline" <span class="arrow">→</span> "simplify" or "speed up"
+  9. "bolster" <span class="arrow">→</span> "strengthen" or "boost"
+
+<span style="color:#aaa">STRUCTURAL FIXES:</span>
+  • Vary sentence length aggressively (mix 4-word and 30-word sentences)
+  • Add first-person voice (I, we, my, our)
+  • Take a position; assert something specific
+
+<span class="lo">PROJECTED SCORE AFTER FIXES: 5–15/100 (LOW)</span></div>
+        <p style="font-size: 13.5px; color: var(--fg-faint); margin-top: 14px;">↑ The Skill is markdown-only; its output contract tells Claude to produce this exact structured shape every time. Less conversational, more scannable. Score is estimated rather than computed — Claude eyeballs the math instead of running it — so the number can wiggle ±5 across runs.</p>
       </div>
     </div>
   </div>
@@ -530,6 +599,7 @@
       <tr><td>Contraction ratio</td><td><span class="yes">✓ computed</span></td><td><span class="no">✗ estimated</span></td></tr>
       <tr><td>Em-dash count</td><td><span class="yes">✓ exact</span></td><td><span class="meh">~ approximate</span></td></tr>
       <tr><td>Same input → same output</td><td><span class="yes">✓</span></td><td><span class="no">✗ varies by run</span></td></tr>
+      <tr><td>Default output style</td><td><span class="meh">~ prose (Claude reformats)</span></td><td><span class="yes">✓ strict structured</span></td></tr>
     </tbody>
   </table>
 
@@ -605,6 +675,13 @@
       btn.classList.add('copied');
       setTimeout(() => { label.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
     });
+  }
+
+  function switchTab(event, target) {
+    document.querySelectorAll('.example-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.example-pane').forEach(p => p.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('pane-' + target).classList.add('active');
   }
 
   // Open all external links in a new tab.
