@@ -113,7 +113,7 @@ mcp = FastMCP(SERVER_NAME)
 # Landing Page (HTTP only) — visited at the root URL when hosted
 # ─────────────────────────────────────────────────────────────────────
 
-_PUBLIC_LANDING_URL = "https://aousabdo.github.io/humanizer-mcp/"
+_PUBLIC_LANDING_URL = "https://humanizer.analyticadss.com/"
 
 _LANDING_HTML = """<!doctype html>
 <html lang="en">

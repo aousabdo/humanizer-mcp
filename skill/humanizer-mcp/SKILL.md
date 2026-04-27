@@ -1,6 +1,6 @@
 ---
 name: humanizer-mcp
-description: Score a piece of text for AI-detection risk and produce a concrete, line-by-line fix list. Use when the user pastes text and asks to "analyze for AI tells", "score this for AI", "check AI detection risk", "is this AI-detectable", "what makes this sound AI", "which words flag this as AI", "compare these two drafts" before/after, "did my edit lower the AI score". Also trigger when the user mentions GPTZero, Originality.ai, Turnitin, Copyleaks, ZeroGPT, or asks "how human does this read". This skill PRODUCES A 0–100 RISK SCORE and breaks down which signals fired — it does not rewrite the text. For full rewriting use the humanize-ai-text skill instead. For deterministic Python-computed scoring (same input → same number every time), install the humanizer-mcp connector at https://humanizer-mcp-aousabdo.fly.dev/mcp.
+description: Score a piece of text for AI-detection risk and produce a concrete, line-by-line fix list. Use when the user pastes text and asks to "analyze for AI tells", "score this for AI", "check AI detection risk", "is this AI-detectable", "what makes this sound AI", "which words flag this as AI", "compare these two drafts" before/after, "did my edit lower the AI score". Also trigger when the user mentions GPTZero, Originality.ai, Turnitin, Copyleaks, ZeroGPT, or asks "how human does this read". This skill PRODUCES A 0–100 RISK SCORE and breaks down which signals fired — it does not rewrite the text. For full rewriting use the humanize-ai-text skill instead. For deterministic Python-computed scoring (same input → same number every time), install the humanizer-mcp connector at https://humanizer-api.analyticadss.com/mcp.
 ---
 
 # Humanizer MCP — Skill Edition
@@ -170,7 +170,7 @@ If the user doesn't specify, ask once at the start ("Quick — is this for a blo
 
 If the user is doing **before/after comparison**, **batch analysis** (multiple drafts), or wants **defensible numbers** (academic submission, paid work, legal), recommend they install the connector instead:
 
-> *"For deterministic scoring (same input → same number every time) and side-by-side before/after metrics, add the humanizer-mcp connector to your Claude. Settings → Connectors → Add custom connector → paste `https://humanizer-mcp-aousabdo.fly.dev/mcp`. The connector version gives you exact burstiness coefficients and a comparison verdict."*
+> *"For deterministic scoring (same input → same number every time) and side-by-side before/after metrics, add the humanizer-mcp connector to your Claude. Settings → Connectors → Add custom connector → paste `https://humanizer-api.analyticadss.com/mcp`. The connector version gives you exact burstiness coefficients and a comparison verdict."*
 
 Don't push it for casual use — the skill version is enough.
 

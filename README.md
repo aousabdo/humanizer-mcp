@@ -8,7 +8,7 @@
 
 An MCP (Model Context Protocol) server that measures AI-detection risk in a piece of text and tells you — line by line — what to change. Works with Claude Code, Claude Desktop, and any MCP-compatible client.
 
-> **Just want to use it?** Go to **[aousabdo.github.io/humanizer-mcp](https://aousabdo.github.io/humanizer-mcp/)** — copy the URL, paste it into Claude's Connectors, done. The rest of this README is for developers and people self-hosting.
+> **Just want to use it?** Go to **[humanizer.analyticadss.com](https://humanizer.analyticadss.com)** — copy the URL, paste it into Claude's Connectors, done. The rest of this README is for developers and people self-hosting.
 
 Rather than running your prose through a black-box "humanizer," this server analyzes it against known detection signals (vocabulary, burstiness, contraction usage, paragraph uniformity, em dashes, first-person voice) and returns a structured report with a 0–100 risk score and a concrete rewrite plan. The actual rewriting is left to the LLM that's driving the conversation — which is the point: a planner, not a laundering service.
 
@@ -42,7 +42,7 @@ Works in **claude.ai (web), Claude Desktop, and Claude for Chrome** — all four
 A hosted reference instance is up — feel free to use it for casual evaluation:
 
 ```
-https://humanizer-mcp-aousabdo.fly.dev/mcp
+https://humanizer-api.analyticadss.com/mcp
 ```
 
 For production / privacy-sensitive use, deploy your own with the included `Dockerfile` (see [Hosting](#hosting) below — Fly.io takes ~3 minutes). The hosted instance is on a free Fly tier with no SLA, no support, and no privacy guarantees — your text passes through it.
