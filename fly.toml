@@ -1,4 +1,4 @@
-app = "humanizer-mcp"
+app = "humanizer-mcp-aousabdo"
 primary_region = "iad"
 
 [build]
