@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Feedback themes (2-week check-in, 2026-05-08)
+
+- No issues or PRs opened yet as of 2026-05-08.
+
 ## [0.2.0] — 2026-04-27
 
 ### Added
