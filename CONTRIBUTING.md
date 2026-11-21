@@ -67,4 +67,4 @@ git tag v0.2.0
 git push origin main --tags
 ```
 
-The publish workflow uses PyPI Trusted Publishing (OIDC — no API token) and an `NPM_TOKEN` repository secret.
+The publish workflow uses Trusted Publishing (OIDC) for both registries — no API tokens or repository secrets. The trusted publisher is configured on pypi.org and on npmjs.com (package settings → Trusted Publisher: GitHub Actions, `aousabdo/humanizer-mcp`, workflow `publish.yml`). If either registry rejects a publish, check that configuration first.

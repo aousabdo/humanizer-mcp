@@ -18,10 +18,10 @@ jobs:
     permissions:
       id-token: write  # required for PyPI Trusted Publishing (OIDC)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -38,14 +38,21 @@ jobs:
     name: Publish to npm
     runs-on: ubuntu-latest
     needs: publish-pypi
+    permissions:
+      contents: read
+      id-token: write  # npm Trusted Publishing (OIDC) — no NPM_TOKEN secret
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
+
+      # Trusted publishing needs npm >= 11.5.1.
+      - name: Ensure a recent npm
+        run: npm install -g npm@^11.5.1 && npm --version
 
       - name: Sync npm version to git tag
         working-directory: npm
@@ -53,8 +60,9 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           npm version "$VERSION" --no-git-tag-version --allow-same-version
 
+      # Authenticates via OIDC; requires the trusted publisher
+      # (aousabdo/humanizer-mcp, workflow publish.yml) set on npmjs.com.
+      # Provenance attestations are generated automatically.
       - name: Publish to npm
         working-directory: npm
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
