@@ -39,7 +39,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "mcp>=1.2.0",
+    # mcp 2.x removed mcp.server.fastmcp (renamed to MCPServer); stay on 1.x until the server is ported.
+    "mcp>=1.2.0,<2",
     "pydantic>=2.0.0",
 ]
 

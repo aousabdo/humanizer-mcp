@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-11-21
+
+### Fixed
+
+- The server crashed on startup with `ModuleNotFoundError: No module named 'mcp.server.fastmcp'` on any fresh install. The `mcp>=1.2.0` dependency had no upper bound, so installs picked up mcp 2.x, which renamed `FastMCP` to `MCPServer`. The dependency is now `mcp>=1.2.0,<2`. This affected `pip install`, `uvx`, `pipx` and the npm launcher (which runs the PyPI package), as well as Docker builds.
+
 ## [0.2.0] — 2026-04-27
 
 ### Added
