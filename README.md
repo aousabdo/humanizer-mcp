@@ -46,14 +46,14 @@ A hosted reference instance is up — feel free to use it for casual evaluation:
 https://humanizer-api.analyticadss.com/mcp
 ```
 
-For production / privacy-sensitive use, deploy your own with the included `Dockerfile` (see [Hosting](#hosting) below — Fly.io takes ~3 minutes). The hosted instance is on a free Fly tier with no SLA, no support, and no privacy guarantees — your text passes through it.
+The reference instance runs on Analytica's own server. It's stateless and writes nothing to disk, but it's best-effort: no SLA, no support, and your text does pass through it. For production or privacy-sensitive use, run your own with the included `Dockerfile` (see [Hosting](#hosting) below).
 
 To add it to your Claude:
 
 1. Open Claude → **Settings** → **Connectors**.
 2. Click **Add custom connector**.
 3. Paste the URL above (or your own hosted instance's `/mcp` URL).
-4. Save. The five `humanizer_*` tools become available in any chat.
+4. Save. The six `humanizer_*` tools become available in any chat.
 
 That's the whole install for non-technical users — they never touch a terminal.
 
@@ -142,7 +142,7 @@ Once installed by any path, in any Claude chat ask:
 
 > *"What humanizer tools do you have available?"*
 
-Claude should list five: `humanizer_analyze_ai_tells`, `humanizer_quick_vocab_scan`, `humanizer_get_rewrite_instructions`, `humanizer_compare_before_after`, `humanizer_get_banned_words`.
+Claude should list six: `humanizer_humanize_text`, `humanizer_analyze_ai_tells`, `humanizer_quick_vocab_scan`, `humanizer_get_rewrite_instructions`, `humanizer_compare_before_after`, `humanizer_get_banned_words`.
 
 Then try the canonical test:
 
